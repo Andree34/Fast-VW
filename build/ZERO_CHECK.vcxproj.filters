@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW\build\CMakeFiles\2898f34568c8709ca28991012a5f256a\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{8C1F5AD0-AF9B-3BEE-8E6E-8727A0E2211B}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,6 @@
+C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW/build/CMakeFiles/Fast_VW.dir
+C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW/build/CMakeFiles/compilation_of__Fast_VW.dir
+C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW/build/CMakeFiles/ALL_CGAL_TARGETS.dir
+C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW/build/CMakeFiles/cgal_check_build_system.dir
+C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW/build/CMakeFiles/ZERO_CHECK.dir
