@@ -292,61 +292,71 @@ struct VW_computator
 		for (auto index : result)
 			std::cout << index << std::endl;
 	}
-
-	//void test_function()
-	//{
-	//	int bound = (int)vertices.size() - 6;
-	//	for (int i = (int)vertices.size() - 50000; i >= 0; i--)
-	//	{
-	//		Vertex_handle v = get_vi(i)->first;
-	//		auto [nb1, nb2] = get_neighbours(v);
-
-	//		// make all the incident constraints regular triangulation edges
-	//		ct.remove_incident_constraints(v);
-
-	//		// remove vertex from polygon
-	//		vertices.erase(get_vi(v));
-
-	//		// Remove the vertex from the CT.
-	//		ct.remove(v);
-
-	//		// add back the constraint to close the shape
-	//		ct.insert_constraint(nb1, nb2);
-	//	}
-
-	//	/*long long a = 0;
-	//	for (size_t i = 0; i < poly_size; i++)
-	//		for (size_t j = 0; j < poly_size; j++)
-	//			a += i + j;
-	//	std::cout << a;*/
-
-	//	assert(ct.is_valid());
-	//	int count = 0;
-	//	for (Edge_iterator e = ct.finite_edges_begin(); e != ct.finite_edges_end(); ++e)
-	//		if (!ct.is_constrained(*e))
-	//		{
-	//			++count;
-	//			Vertex_handle v1 = e->first->vertex((e->second + 1) % 3);
-	//			Vertex_handle v2 = e->first->vertex((e->second + 2) % 3);
-
-	//			std::cout << "IDs of vertices:" << VH_to_id[v1] << " " << VH_to_id[v2] << std::endl;
-	//			std::cout << "Edge from " << v1->point() << " to " << v2->point() << std::endl;
-	//		}
-
-	//	std::cout << "The number of resulting triangulation edges is  ";
-	//	std::cout << count;
-	//}
 };
+
+namespace Test
+{
+	// add test here
+	std::vector<std::string> test_names = {
+		"BoundaryBlock",
+		"Arrow"
+	};
+
+	bool run_test(std::string test_name, bool verbose = 1)
+	{
+		std::cout << "Running test: " << test_name << std::endl;
+
+		std::vector<int> result = VW_computator(test_name).result;
+		std::ifstream in("../data/" + test_name + "/data.out");
+		std::istream_iterator<int> begin(in);
+		std::istream_iterator<int> end;
+		std::vector<int> expected_indices(begin, end);
+
+		// Test is index count produced by algo matches expected index count
+		assert((result.size() == expected_indices.size()) && "Resulting index count does not match test case");
+
+		for (int i = 0; i < result.size(); i++)
+			if (result[i] != expected_indices[i])
+			{
+				if (verbose)
+				{
+					std::cout << "Failed on test case: " << test_name << std::endl;
+					std::cout << "Mismatch on sequence index: " << i << " (0-based)" << std::endl;
+					std::cout << "Expected: " << expected_indices[i] << std::endl;
+					std::cout << "Received: " << result[i] << std::endl;
+				}
+				else std::cout << "Failed" << std::endl;
+				return false;
+			}
+
+		std::cout << "Passed" << std::endl;
+		return true;
+	}
+
+	void run_tests()
+	{
+		std::cout << "Running tests..." << std::endl;
+		for (auto& name : test_names)
+		{
+			std::cout << std::endl;
+			if (!run_test(name))
+				break;
+		}
+	}
+}
 
 int main()
 {
+	// Sample way of generating a big test case
 	/*int n = 1000000;
 	std::ofstream fout("../data/HugeZigZag/data.in");
 	for (int i = 0; i < n; ++i)
 		fout << i << " " << (i & 1) << std::endl;
 	fout << poly_size << " " << 2 * poly_size << std::endl;*/
 
-	VW_computator vw("BoundaryBlock");
-	vw.print_result();
-	//vw.test_function();
+	// Sample way of instantiating VW_computator
+	/*VW_computator vw("BoundaryBlock");
+	vw.print_result();*/
+
+	Test::run_tests();
 }
