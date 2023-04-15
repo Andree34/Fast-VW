@@ -4,6 +4,8 @@
 cmake_minimum_required(VERSION 3.1...3.23)
 project(Fast_VW)
 
+set(CMAKE_BUILD_TYPE Release)
+
 find_package(CGAL REQUIRED OPTIONAL_COMPONENTS)
 
 # create a target per cppfile

@@ -101,6 +101,7 @@
       <UseFullPaths>false</UseFullPaths>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_SCL_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;BOOST_ALL_DYN_LINK=1;CGAL_DATA_DIR="C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/CGAL-5.5.2/data";CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;_SCL_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;BOOST_ALL_DYN_LINK=1;CGAL_DATA_DIR=\"C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/CGAL-5.5.2/data\";CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
@@ -145,6 +146,7 @@
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <DebugInformationFormat>
       </DebugInformationFormat>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_SCL_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;BOOST_ALL_DYN_LINK=1;CGAL_DATA_DIR=\"C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/CGAL-5.5.2/data\";CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
@@ -189,6 +191,7 @@
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <DebugInformationFormat>
       </DebugInformationFormat>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_SCL_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;BOOST_ALL_DYN_LINK=1;CGAL_DATA_DIR=\"C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/CGAL-5.5.2/data\";CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
@@ -232,6 +235,7 @@
       <UseFullPaths>false</UseFullPaths>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_SCL_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;BOOST_ALL_DYN_LINK=1;CGAL_DATA_DIR="C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/CGAL-5.5.2/data";CMAKE_INTDIR="RelWithDebInfo"</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_SCL_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;BOOST_ALL_DYN_LINK=1;CGAL_DATA_DIR=\"C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/CGAL-5.5.2/data\";CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
