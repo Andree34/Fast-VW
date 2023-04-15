@@ -1,6 +1,6 @@
 Each subfolder in this folder is a test case (i.e. BoundaryBlock)
 Each test subfolder shall contain two files:
 
-*.in file: Containing on each row a pair of numbers (can also be rational numbers), representing the (x, y) coordinates of points describing a simple polygon, given in counter-clockwise order.
+"data.in": Containing on each row a pair of numbers (can also be rational numbers), representing the (x, y) coordinates of points describing a simple polygon, given in counter-clockwise order.
 
-*.out file: Containing the ordered sequence of vertex indices (0-based, 1 index per row) that shall be the result of the VW algorithm applied to the given polygon, according to its specification, with the addition that two triangles with the same area are further compared by vertex index (smallest index first) to make testing predictable. The indices of the vertices correspond to their rows in the *.in file. For example, vertex on row 1 has index 0, vertex on row 2 has index 1, ...
+"data.out": Containing the ordered sequence of vertex indices (0-based, 1 index per row) that shall be the result of the VW algorithm applied to the given polygon, according to its specification, with the addition that two triangles with the same area are further compared by vertex index (smallest index first) to make testing predictable. The indices of the vertices correspond to their rows in the *.in file. For example, vertex on row 1 has index 0, vertex on row 2 has index 1, ...
