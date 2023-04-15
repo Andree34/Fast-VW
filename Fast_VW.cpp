@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <chrono>
 
 typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
 typedef CGAL::No_constraint_intersection_tag                               Itag;
@@ -29,6 +30,8 @@ struct VW_computator
 
 	// name of the folder where the data was taken from
 	std::string name;
+
+	int point_in_triangle_checks = 0;
 
 	// points given in the input
 	std::list<std::pair<Vertex_handle, int>> vertices;
@@ -127,6 +130,7 @@ struct VW_computator
 
 			// check if point is in triangle here using vertex orientations
 			// TODO: Also check if barycentric coordinate test is faster
+			++point_in_triangle_checks;
 			if(is_in_triangle(vc->point(), vh->point(), nb1->point(), nb2->point()))
 				return VH_to_id[vc->handle()];
 			++vc;
@@ -191,6 +195,9 @@ struct VW_computator
 		// blocked[i] contains the indices of all vertices that are blocked
 		std::vector<std::vector<int>> blocked(vertices.size());
 
+		// keeps track of vertices that were removed (char is used since vector<bool> is bad practice)
+		std::vector<char> removed(vertices.size());
+
 		// maps each vertex index to the corresponding iterator in the map
 		std::vector<Map_iterator> index_to_SI(vertices.size());
 		for (auto& it : index_to_SI)
@@ -235,6 +242,9 @@ struct VW_computator
 			// remove vertex from polygon
 			vertices.erase(get_vi(best_vertex));
 
+			// track removal
+			removed[index] = 1;
+
 			// Remove the vertex from the CT.
 			ct.remove(best_vertex);
 
@@ -243,7 +253,8 @@ struct VW_computator
 
 			// unblock vertices that were blocked by best_vertex
 			for (int to_unblock : blocked[index])
-				handle_vertex(get_vi(to_unblock)->first, ordered_triangles, blocked, index_to_SI[to_unblock]);
+				if(!removed[to_unblock])
+					handle_vertex(get_vi(to_unblock)->first, ordered_triangles, blocked, index_to_SI[to_unblock]);
 
 			// handle neighbour vertices
 			int index_nb1 = VH_to_id[nb1];
@@ -345,6 +356,24 @@ namespace Test
 	}
 }
 
+namespace IPE
+{
+	void process_file(std::string name)
+	{
+		using Row = std::pair<std::pair<std::string, std::string>, std::string>;
+		std::ifstream fin("../data/" + name + "/data.in");
+		
+		std::vector<std::pair<std::string, std::string>> rows;
+		std::string str1, str2, str3;
+		while (fin >> str1 >> str2 >> str3)
+			rows.push_back({ str1, str2 });
+
+		std::ofstream fout("../data/" + name + "/data.in");
+		for (auto [str1, str2] : rows)
+			fout << str1 << " " << str2 << std::endl;
+	}
+}
+
 int main()
 {
 	// Sample way of generating a big test case
@@ -355,8 +384,17 @@ int main()
 	fout << poly_size << " " << 2 * poly_size << std::endl;*/
 
 	// Sample way of instantiating VW_computator
-	/*VW_computator vw("BoundaryBlock");
-	vw.print_result();*/
+	auto start_time_full_algo = std::chrono::high_resolution_clock::now();
 
-	Test::run_tests();
+	VW_computator vw("India");
+
+	auto end_time_full_algo = std::chrono::high_resolution_clock::now();
+	auto duration_full_algo = std::chrono::duration_cast<std::chrono::milliseconds>(end_time_full_algo - start_time_full_algo);
+
+	std::cout << "Milliseconds passed entire algorithm (test case " + vw.name + "): " << duration_full_algo.count() << " milliseconds." << std::endl;
+	std::cout << "Point in triangle checks (test case " + vw.name + "): " << vw.point_in_triangle_checks << std::endl;
+	//vw.print_result();
+
+	//Test::run_tests();
+	//IPE::process_file("India");
 }
