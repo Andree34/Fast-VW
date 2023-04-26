@@ -10,10 +10,12 @@
 #include <map>
 #include <chrono>
 
-typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
+typedef CGAL::Exact_predicates_exact_constructions_kernel K;
 typedef CGAL::No_constraint_intersection_tag                               Itag;
 typedef CGAL::Constrained_Delaunay_triangulation_2<K, CGAL::Default, Itag> CDT;
 typedef CGAL::Constrained_triangulation_2<K, CGAL::Default, Itag> CT;
+
+int unknown_point_detections;
 
 // the type T can (probably) be any type of constrained triangulation that is provided by CGAL
 template<typename T = CDT>
@@ -119,8 +121,17 @@ struct VW_computator
 		Vertex_circulator vc = ct.incident_vertices(vh), done(vc);
 		do
 		{
+			// skip points added to the triangulation by CGAL
+			if (VH_to_id.find(vc->handle()) == VH_to_id.end())
+			{
+				++unknown_point_detections;
+				//std::cerr << vc->point().x() << " " << vc->point().y() << std::endl;
+				++vc;
+				continue;
+			}
+
 			// if the current vertex is a neighbour, skip it
-			if (vc == nb1 || vc == nb2)
+			if (vc->handle() == nb1 || vc->handle() == nb2)
 			{
 				++vc;
 				continue;
@@ -131,7 +142,7 @@ struct VW_computator
 			// check if point is in triangle here using vertex orientations
 			// TODO: Also check if barycentric coordinate test is faster
 			++point_in_triangle_checks;
-			if(is_in_triangle(vc->point(), vh->point(), nb1->point(), nb2->point()))
+			if (is_in_triangle(vc->point(), vh->point(), nb1->point(), nb2->point()))
 				return VH_to_id[vc->handle()];
 			++vc;
 
@@ -211,6 +222,12 @@ struct VW_computator
 		int bound = (int)vertices.size() - remaining_vertices;
 		for (int i = 0; i < bound; i++)
 		{
+			/*std::cerr << "Iteration " << i << std::endl;
+			for (auto [comp, vh] : ordered_triangles)
+			{
+				std::cerr << comp.second << std::endl;
+			}*/
+
 			while (get_block(ordered_triangles.begin()->second) >= 0)
 			{
 				assert(ordered_triangles.size() >= 1);
@@ -309,8 +326,9 @@ namespace Test
 {
 	// add test here
 	std::vector<std::string> test_names = {
+		"Arrow",
 		"BoundaryBlock",
-		"Arrow"
+		"BoundaryBlock2"
 	};
 
 	bool run_test(std::string test_name, bool verbose = 1)
@@ -374,8 +392,141 @@ namespace IPE
 	}
 }
 
+namespace Quadratic
+{
+	using Exact = CGAL::Exact_predicates_exact_constructions_kernel;
+	template <class K> using Number = typename K::FT;
+	template <class K> using Point = CGAL::Point_2<K>;
+
+	struct VWPoint {
+
+		VWPoint(const Point<Exact>& pt) : pt(pt), removedAt(-1), cost(0) {}
+
+		Point<Exact> pt;
+		int removedAt;
+		Number<Exact> cost;
+	};
+
+	/// A class to perform Visvalingam-Whyatt simplification.
+	class VWSimplification {
+
+	public:
+		std::string name;
+
+		/// Constructs a simplification for a sequence of points.
+		/// \param pts The sequence of 2D points.
+		VWSimplification(std::shared_ptr<std::vector<Point<Exact>>> pts)
+		{
+			this->m_input = pts;
+			for (const Point<Exact>& p : *pts) {
+				VWPoint* vp = new VWPoint(p);
+				this->m_complete.push_back(vp);
+				this->m_current.push_back(vp);
+			}
+			for (int i = 0; i < this->m_current.size(); i++) {
+				recomputeCost(i);
+			}
+		}
+
+		VWSimplification(std::string input_folder_name)
+		{
+			name = input_folder_name;
+			std::ifstream in("../data/" + input_folder_name + "/data.in");
+			std::istream_iterator<Point<Exact>> begin(in);
+			std::istream_iterator<Point<Exact>> end;
+			std::vector<Point<Exact>> points(begin, end);
+			std::shared_ptr<std::vector<Point<Exact>>> pts = std::make_shared<std::vector<Point<Exact>>>(points);
+
+			this->m_input = pts;
+			for (const Point<Exact>& p : *pts) {
+				VWPoint* vp = new VWPoint(p);
+				this->m_complete.push_back(vp);
+				this->m_current.push_back(vp);
+			}
+			for (int i = 0; i < this->m_current.size(); i++) {
+				recomputeCost(i);
+			}
+		}
+
+		~VWSimplification()
+		{
+			for (VWPoint* vp : this->m_complete) {
+				delete vp;
+			}
+		}
+
+		Number<Exact> constructAtComplexity(const int k)
+		{
+			continueToComplexity(k);
+
+			this->m_input->clear();
+			Number<Exact> maxCost = 0;
+
+			for (VWPoint* vp : this->m_complete) {
+				if (vp->removedAt <= k) {
+					this->m_input->push_back(vp->pt);
+				}
+				else if (maxCost < vp->cost) {
+					maxCost = vp->cost;
+				}
+			}
+
+			return maxCost;
+		}
+
+		std::vector<VWPoint*> get_current()
+		{
+			return m_current;
+		}
+
+		void print_current_polygon()
+		{
+			for (auto point : m_current)
+				std::cerr << point->pt.x() << " " << point->pt.y() << std::endl;
+		}
+
+	private:
+		void continueToComplexity(const int k)
+		{
+			int counter = 0;
+			while (this->m_current.size() > k) {
+				if (!(counter++ % 100))
+					std::cout << counter << " points processed" << std::endl;
+
+				int best = 0;
+				for (int i = 1; i < this->m_current.size() - 1; i++) {
+					if (best == 0 || this->m_current[best]->cost > this->m_current[i]->cost) {
+						best = i;
+					}
+				}
+				this->m_current[best]->removedAt = this->m_current.size();
+				this->m_current.erase(this->m_current.begin() + best);
+				recomputeCost(best - 1);
+				recomputeCost(best);
+			}
+		}
+
+		void recomputeCost(const int i)
+		{
+			if (i == 0 || i == this->m_current.size() - 1) {
+				this->m_current[i]->cost = -1;
+			}
+			else {
+				this->m_current[i]->cost = CGAL::abs(CGAL::area(
+					this->m_current[i - 1]->pt, this->m_current[i]->pt, this->m_current[i + 1]->pt));
+			}
+		}
+
+		std::shared_ptr<std::vector<Point<Exact>>> m_input;
+		std::vector<VWPoint*> m_complete;
+		std::vector<VWPoint*> m_current;
+	};
+}
+
 int main()
 {
+	/////////////////////////////////////////////////
+
 	// Sample way of generating a big test case
 	/*int n = 1000000;
 	std::ofstream fout("../data/HugeZigZag/data.in");
@@ -383,18 +534,40 @@ int main()
 		fout << i << " " << (i & 1) << std::endl;
 	fout << poly_size << " " << 2 * poly_size << std::endl;*/
 
-	// Sample way of instantiating VW_computator
-	auto start_time_full_algo = std::chrono::high_resolution_clock::now();
+	/////////////////////////////////////////////////
 
-	VW_computator vw("India");
+	// Sample way of instantiating VW_computator
+	//auto start_time_full_algo = std::chrono::high_resolution_clock::now();
+
+	//VW_computator vw("StressTests/GiganticPolygon");
+	//std::cout << "Unknown point detections: " << unknown_point_detections << std::endl;
+	//std::cout << "Number of vertices removes: " << vw.result.size() << std::endl;
+
+	////std::cout << "First 100 vertices removed: " << std::endl;
+	////for (size_t i = 0; i < 100; i++)
+	////	std::cout << vw.result[i] << std::endl;
+
+	//auto end_time_full_algo = std::chrono::high_resolution_clock::now();
+	//auto duration_full_algo = std::chrono::duration_cast<std::chrono::milliseconds>(end_time_full_algo - start_time_full_algo);
+
+	//std::cout << "Milliseconds passed entire algorithm (test case " + vw.name + "): " << duration_full_algo.count() << " milliseconds." << std::endl;
+	//std::cout << "Point in triangle checks (test case " + vw.name + "): " << vw.point_in_triangle_checks << std::endl;
+	////vw.print_result();
+
+	/////////////////////////////////////////////////
+
+	auto start_time_full_algo = std::chrono::high_resolution_clock::now();
+	Quadratic::VWSimplification vw("StressTests/BigPolygon");
+	vw.constructAtComplexity(3);
+	vw.print_current_polygon();
 
 	auto end_time_full_algo = std::chrono::high_resolution_clock::now();
 	auto duration_full_algo = std::chrono::duration_cast<std::chrono::milliseconds>(end_time_full_algo - start_time_full_algo);
 
 	std::cout << "Milliseconds passed entire algorithm (test case " + vw.name + "): " << duration_full_algo.count() << " milliseconds." << std::endl;
-	std::cout << "Point in triangle checks (test case " + vw.name + "): " << vw.point_in_triangle_checks << std::endl;
-	//vw.print_result();
+
+	/////////////////////////////////////////////////
 
 	//Test::run_tests();
-	//IPE::process_file("India");
+	//IPE::process_file("BoundaryBlock2");
 }
