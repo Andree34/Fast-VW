@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW refactored\Fast_simplifier.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW refactored\Slow_simplifier.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW refactored\Test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW refactored\Utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW refactored\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW refactored\Fast_simplifier.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW refactored\Slow_simplifier.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW refactored\Test.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW refactored\Utils.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW refactored\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{4FCF7F00-A35E-37E4-AE83-3EEB83DA9759}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{BDFB6717-BFB5-3540-8236-B41F1132A555}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

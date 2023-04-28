@@ -1,18 +1,28 @@
-# Created by the script cgal_create_cmake_script
-# This is the CMake script for compiling a CGAL application.
-
 cmake_minimum_required(VERSION 3.1...3.23)
-project(Fast_VW)
+project(VW_Simplification)
 
 set(CMAKE_BUILD_TYPE Release)
 
-find_package(CGAL REQUIRED OPTIONAL_COMPONENTS)
+find_package(CGAL REQUIRED)
 
-# create a target per cppfile
-file(
-  GLOB cppfiles
-  RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
-foreach(cppfile ${cppfiles})
-  create_single_source_cgal_program("${cppfile}")
-endforeach()
+# Add header and source files to project
+set(HEADER_FILES
+    Fast_simplifier.hpp
+    Slow_simplifier.hpp
+    Test.hpp
+    Utils.hpp
+)
+
+set(SOURCE_FILES
+    Fast_simplifier.cpp
+    Slow_simplifier.cpp
+    Test.cpp
+    Utils.cpp
+    main.cpp
+)
+
+# Create executable target
+add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})
+
+# Link target to CGAL libraries
+target_link_libraries(${PROJECT_NAME} CGAL::CGAL)
