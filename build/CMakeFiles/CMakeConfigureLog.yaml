@@ -24,10 +24,10 @@ events:
       The output was:
       0
       MSBuild version 17.5.1+f6fdcf537 for .NET Framework
-      Build started 4/28/2023 4:09:10 PM.
+      Build started 4/29/2023 1:55:00 AM.
       Included response file: C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\amd64\\MSBuild.rsp
       
-      Project "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\3.26.2\\CompilerIdC\\CompilerIdC.vcxproj" on node 1 (default targets).
+      Project "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\3.26.2\\CompilerIdC\\CompilerIdC.vcxproj" on node 1 (default targets).
       PrepareForBuild:
         Creating directory "Debug\\".
         Creating directory "Debug\\CompilerIdC.tlog\\".
@@ -38,7 +38,7 @@ events:
         CMakeCCompilerId.c
       Link:
         C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:".\\CompilerIdC.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\\CompilerIdC.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\\CompilerIdC.lib" /MACHINE:X64 Debug\\CMakeCCompilerId.obj
-        CompilerIdC.vcxproj -> C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\3.26.2\\CompilerIdC\\CompilerIdC.exe
+        CompilerIdC.vcxproj -> C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\3.26.2\\CompilerIdC\\CompilerIdC.exe
       PostBuildEvent:
         for %%i in (cl.exe) do @echo CMAKE_C_COMPILER=%%~$PATH:i
         :VCEnd
@@ -46,13 +46,13 @@ events:
       FinalizeBuildStatus:
         Deleting file "Debug\\CompilerIdC.tlog\\unsuccessfulbuild".
         Touching "Debug\\CompilerIdC.tlog\\CompilerIdC.lastbuildstate".
-      Done Building Project "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\3.26.2\\CompilerIdC\\CompilerIdC.vcxproj" (default targets).
+      Done Building Project "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\3.26.2\\CompilerIdC\\CompilerIdC.vcxproj" (default targets).
       
       Build succeeded.
           0 Warning(s)
           0 Error(s)
       
-      Time Elapsed 00:00:00.77
+      Time Elapsed 00:00:00.55
       
       
       Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.exe"
@@ -60,7 +60,7 @@ events:
       Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.vcxproj"
       
       The C compiler identification is MSVC, found in:
-        C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW refactored/build/CMakeFiles/3.26.2/CompilerIdC/CompilerIdC.exe
+        C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW/build/CMakeFiles/3.26.2/CompilerIdC/CompilerIdC.exe
       
   -
     kind: "message-v1"
@@ -78,10 +78,10 @@ events:
       The output was:
       0
       MSBuild version 17.5.1+f6fdcf537 for .NET Framework
-      Build started 4/28/2023 4:09:11 PM.
+      Build started 4/29/2023 1:55:01 AM.
       Included response file: C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\amd64\\MSBuild.rsp
       
-      Project "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\3.26.2\\CompilerIdCXX\\CompilerIdCXX.vcxproj" on node 1 (default targets).
+      Project "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\3.26.2\\CompilerIdCXX\\CompilerIdCXX.vcxproj" on node 1 (default targets).
       PrepareForBuild:
         Creating directory "Debug\\".
         Creating directory "Debug\\CompilerIdCXX.tlog\\".
@@ -92,7 +92,7 @@ events:
         CMakeCXXCompilerId.cpp
       Link:
         C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:".\\CompilerIdCXX.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\\CompilerIdCXX.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\\CompilerIdCXX.lib" /MACHINE:X64 Debug\\CMakeCXXCompilerId.obj
-        CompilerIdCXX.vcxproj -> C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\3.26.2\\CompilerIdCXX\\CompilerIdCXX.exe
+        CompilerIdCXX.vcxproj -> C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\3.26.2\\CompilerIdCXX\\CompilerIdCXX.exe
       PostBuildEvent:
         for %%i in (cl.exe) do @echo CMAKE_CXX_COMPILER=%%~$PATH:i
         :VCEnd
@@ -100,13 +100,13 @@ events:
       FinalizeBuildStatus:
         Deleting file "Debug\\CompilerIdCXX.tlog\\unsuccessfulbuild".
         Touching "Debug\\CompilerIdCXX.tlog\\CompilerIdCXX.lastbuildstate".
-      Done Building Project "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\3.26.2\\CompilerIdCXX\\CompilerIdCXX.vcxproj" (default targets).
+      Done Building Project "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\3.26.2\\CompilerIdCXX\\CompilerIdCXX.vcxproj" (default targets).
       
       Build succeeded.
           0 Warning(s)
           0 Error(s)
       
-      Time Elapsed 00:00:00.53
+      Time Elapsed 00:00:00.42
       
       
       Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.exe"
@@ -114,7 +114,7 @@ events:
       Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.vcxproj"
       
       The CXX compiler identification is MSVC, found in:
-        C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW refactored/build/CMakeFiles/3.26.2/CompilerIdCXX/CompilerIdCXX.exe
+        C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW/build/CMakeFiles/3.26.2/CompilerIdCXX/CompilerIdCXX.exe
       
   -
     kind: "try_compile-v1"
@@ -125,8 +125,8 @@ events:
     checks:
       - "Detecting C compiler ABI info"
     directories:
-      source: "C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW refactored/build/CMakeFiles/CMakeScratch/TryCompile-gsakyr"
-      binary: "C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW refactored/build/CMakeFiles/CMakeScratch/TryCompile-gsakyr"
+      source: "C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW/build/CMakeFiles/CMakeScratch/TryCompile-98kw2v"
+      binary: "C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW/build/CMakeFiles/CMakeScratch/TryCompile-98kw2v"
     cmakeVariables:
       CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS"
       CMAKE_C_FLAGS_DEBUG: "/Zi /Ob0 /Od /RTC1"
@@ -135,38 +135,38 @@ events:
       variable: "CMAKE_C_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW refactored/build/CMakeFiles/CMakeScratch/TryCompile-gsakyr
+        Change Dir: C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW/build/CMakeFiles/CMakeScratch/TryCompile-98kw2v
         
-        Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_5b87c.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n && MSBuild version 17.5.1+f6fdcf537 for .NET Framework
-        Build started 4/28/2023 4:09:12 PM.
+        Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_387c9.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n && MSBuild version 17.5.1+f6fdcf537 for .NET Framework
+        Build started 4/29/2023 1:55:02 AM.
         Included response file: C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\amd64\\MSBuild.rsp
         
-        Project "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-gsakyr\\cmTC_5b87c.vcxproj" on node 1 (default targets).
+        Project "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-98kw2v\\cmTC_387c9.vcxproj" on node 1 (default targets).
         PrepareForBuild:
-          Creating directory "cmTC_5b87c.dir\\Debug\\".
-          Creating directory "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-gsakyr\\Debug\\".
-          Creating directory "cmTC_5b87c.dir\\Debug\\cmTC_5b87c.tlog\\".
+          Creating directory "cmTC_387c9.dir\\Debug\\".
+          Creating directory "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-98kw2v\\Debug\\".
+          Creating directory "cmTC_387c9.dir\\Debug\\cmTC_387c9.tlog\\".
         InitializeBuildStatus:
-          Creating "cmTC_5b87c.dir\\Debug\\cmTC_5b87c.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Creating "cmTC_387c9.dir\\Debug\\cmTC_387c9.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
         ClCompile:
-          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_5b87c.dir\\Debug\\\\" /Fd"cmTC_5b87c.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.26\\Modules\\CMakeCCompilerABI.c"
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_387c9.dir\\Debug\\\\" /Fd"cmTC_387c9.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.26\\Modules\\CMakeCCompilerABI.c"
           Microsoft (R) C/C++ Optimizing Compiler Version 19.35.32216.1 for x64
           CMakeCCompilerABI.c
           Copyright (C) Microsoft Corporation.  All rights reserved.
-          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_5b87c.dir\\Debug\\\\" /Fd"cmTC_5b87c.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.26\\Modules\\CMakeCCompilerABI.c"
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_387c9.dir\\Debug\\\\" /Fd"cmTC_387c9.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.26\\Modules\\CMakeCCompilerABI.c"
         Link:
-          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-gsakyr\\Debug\\cmTC_5b87c.exe" /INCREMENTAL /ILK:"cmTC_5b87c.dir\\Debug\\cmTC_5b87c.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW refactored/build/CMakeFiles/CMakeScratch/TryCompile-gsakyr/Debug/cmTC_5b87c.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW refactored/build/CMakeFiles/CMakeScratch/TryCompile-gsakyr/Debug/cmTC_5b87c.lib" /MACHINE:X64  /machine:x64 cmTC_5b87c.dir\\Debug\\CMakeCCompilerABI.obj
-          cmTC_5b87c.vcxproj -> C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-gsakyr\\Debug\\cmTC_5b87c.exe
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-98kw2v\\Debug\\cmTC_387c9.exe" /INCREMENTAL /ILK:"cmTC_387c9.dir\\Debug\\cmTC_387c9.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW/build/CMakeFiles/CMakeScratch/TryCompile-98kw2v/Debug/cmTC_387c9.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW/build/CMakeFiles/CMakeScratch/TryCompile-98kw2v/Debug/cmTC_387c9.lib" /MACHINE:X64  /machine:x64 cmTC_387c9.dir\\Debug\\CMakeCCompilerABI.obj
+          cmTC_387c9.vcxproj -> C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-98kw2v\\Debug\\cmTC_387c9.exe
         FinalizeBuildStatus:
-          Deleting file "cmTC_5b87c.dir\\Debug\\cmTC_5b87c.tlog\\unsuccessfulbuild".
-          Touching "cmTC_5b87c.dir\\Debug\\cmTC_5b87c.tlog\\cmTC_5b87c.lastbuildstate".
-        Done Building Project "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-gsakyr\\cmTC_5b87c.vcxproj" (default targets).
+          Deleting file "cmTC_387c9.dir\\Debug\\cmTC_387c9.tlog\\unsuccessfulbuild".
+          Touching "cmTC_387c9.dir\\Debug\\cmTC_387c9.tlog\\cmTC_387c9.lastbuildstate".
+        Done Building Project "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-98kw2v\\cmTC_387c9.vcxproj" (default targets).
         
         Build succeeded.
             0 Warning(s)
             0 Error(s)
         
-        Time Elapsed 00:00:00.53
+        Time Elapsed 00:00:00.40
         
       exitCode: 0
   -
@@ -178,8 +178,8 @@ events:
     checks:
       - "Detecting CXX compiler ABI info"
     directories:
-      source: "C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW refactored/build/CMakeFiles/CMakeScratch/TryCompile-mc7f64"
-      binary: "C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW refactored/build/CMakeFiles/CMakeScratch/TryCompile-mc7f64"
+      source: "C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW/build/CMakeFiles/CMakeScratch/TryCompile-e1tami"
+      binary: "C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW/build/CMakeFiles/CMakeScratch/TryCompile-e1tami"
     cmakeVariables:
       CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /EHsc"
       CMAKE_CXX_FLAGS_DEBUG: "/Zi /Ob0 /Od /RTC1"
@@ -188,38 +188,38 @@ events:
       variable: "CMAKE_CXX_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW refactored/build/CMakeFiles/CMakeScratch/TryCompile-mc7f64
+        Change Dir: C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW/build/CMakeFiles/CMakeScratch/TryCompile-e1tami
         
-        Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_587c6.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n && MSBuild version 17.5.1+f6fdcf537 for .NET Framework
-        Build started 4/28/2023 4:09:13 PM.
+        Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_c1fa4.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n && MSBuild version 17.5.1+f6fdcf537 for .NET Framework
+        Build started 4/29/2023 1:55:02 AM.
         Included response file: C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\amd64\\MSBuild.rsp
         
-        Project "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-mc7f64\\cmTC_587c6.vcxproj" on node 1 (default targets).
+        Project "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-e1tami\\cmTC_c1fa4.vcxproj" on node 1 (default targets).
         PrepareForBuild:
-          Creating directory "cmTC_587c6.dir\\Debug\\".
-          Creating directory "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-mc7f64\\Debug\\".
-          Creating directory "cmTC_587c6.dir\\Debug\\cmTC_587c6.tlog\\".
+          Creating directory "cmTC_c1fa4.dir\\Debug\\".
+          Creating directory "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-e1tami\\Debug\\".
+          Creating directory "cmTC_c1fa4.dir\\Debug\\cmTC_c1fa4.tlog\\".
         InitializeBuildStatus:
-          Creating "cmTC_587c6.dir\\Debug\\cmTC_587c6.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Creating "cmTC_c1fa4.dir\\Debug\\cmTC_c1fa4.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
         ClCompile:
-          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_587c6.dir\\Debug\\\\" /Fd"cmTC_587c6.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TP /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.26\\Modules\\CMakeCXXCompilerABI.cpp"
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_c1fa4.dir\\Debug\\\\" /Fd"cmTC_c1fa4.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TP /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.26\\Modules\\CMakeCXXCompilerABI.cpp"
           Microsoft (R) C/C++ Optimizing Compiler Version 19.35.32216.1 for x64
           CMakeCXXCompilerABI.cpp
           Copyright (C) Microsoft Corporation.  All rights reserved.
-          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_587c6.dir\\Debug\\\\" /Fd"cmTC_587c6.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TP /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.26\\Modules\\CMakeCXXCompilerABI.cpp"
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_c1fa4.dir\\Debug\\\\" /Fd"cmTC_c1fa4.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TP /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.26\\Modules\\CMakeCXXCompilerABI.cpp"
         Link:
-          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-mc7f64\\Debug\\cmTC_587c6.exe" /INCREMENTAL /ILK:"cmTC_587c6.dir\\Debug\\cmTC_587c6.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW refactored/build/CMakeFiles/CMakeScratch/TryCompile-mc7f64/Debug/cmTC_587c6.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW refactored/build/CMakeFiles/CMakeScratch/TryCompile-mc7f64/Debug/cmTC_587c6.lib" /MACHINE:X64  /machine:x64 cmTC_587c6.dir\\Debug\\CMakeCXXCompilerABI.obj
-          cmTC_587c6.vcxproj -> C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-mc7f64\\Debug\\cmTC_587c6.exe
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-e1tami\\Debug\\cmTC_c1fa4.exe" /INCREMENTAL /ILK:"cmTC_c1fa4.dir\\Debug\\cmTC_c1fa4.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW/build/CMakeFiles/CMakeScratch/TryCompile-e1tami/Debug/cmTC_c1fa4.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW/build/CMakeFiles/CMakeScratch/TryCompile-e1tami/Debug/cmTC_c1fa4.lib" /MACHINE:X64  /machine:x64 cmTC_c1fa4.dir\\Debug\\CMakeCXXCompilerABI.obj
+          cmTC_c1fa4.vcxproj -> C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-e1tami\\Debug\\cmTC_c1fa4.exe
         FinalizeBuildStatus:
-          Deleting file "cmTC_587c6.dir\\Debug\\cmTC_587c6.tlog\\unsuccessfulbuild".
-          Touching "cmTC_587c6.dir\\Debug\\cmTC_587c6.tlog\\cmTC_587c6.lastbuildstate".
-        Done Building Project "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-mc7f64\\cmTC_587c6.vcxproj" (default targets).
+          Deleting file "cmTC_c1fa4.dir\\Debug\\cmTC_c1fa4.tlog\\unsuccessfulbuild".
+          Touching "cmTC_c1fa4.dir\\Debug\\cmTC_c1fa4.tlog\\cmTC_c1fa4.lastbuildstate".
+        Done Building Project "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-e1tami\\cmTC_c1fa4.vcxproj" (default targets).
         
         Build succeeded.
             0 Warning(s)
             0 Error(s)
         
-        Time Elapsed 00:00:00.52
+        Time Elapsed 00:00:00.40
         
       exitCode: 0
   -
@@ -237,8 +237,8 @@ events:
     checks:
       - "Performing Test CMAKE_HAVE_LIBC_PTHREAD"
     directories:
-      source: "C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW refactored/build/CMakeFiles/CMakeScratch/TryCompile-cf35vv"
-      binary: "C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW refactored/build/CMakeFiles/CMakeScratch/TryCompile-cf35vv"
+      source: "C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW/build/CMakeFiles/CMakeScratch/TryCompile-81f73i"
+      binary: "C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW/build/CMakeFiles/CMakeScratch/TryCompile-81f73i"
     cmakeVariables:
       CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS"
       CMAKE_C_FLAGS_DEBUG: "/Zi /Ob0 /Od /RTC1"
@@ -248,38 +248,38 @@ events:
       variable: "CMAKE_HAVE_LIBC_PTHREAD"
       cached: true
       stdout: |
-        Change Dir: C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW refactored/build/CMakeFiles/CMakeScratch/TryCompile-cf35vv
+        Change Dir: C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW/build/CMakeFiles/CMakeScratch/TryCompile-81f73i
         
-        Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_032be.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n && MSBuild version 17.5.1+f6fdcf537 for .NET Framework
-        Build started 4/28/2023 4:09:14 PM.
+        Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_429b3.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n && MSBuild version 17.5.1+f6fdcf537 for .NET Framework
+        Build started 4/29/2023 1:55:03 AM.
         Included response file: C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\amd64\\MSBuild.rsp
         
-        Project "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-cf35vv\\cmTC_032be.vcxproj" on node 1 (default targets).
+        Project "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-81f73i\\cmTC_429b3.vcxproj" on node 1 (default targets).
         PrepareForBuild:
-          Creating directory "cmTC_032be.dir\\Debug\\".
-          Creating directory "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-cf35vv\\Debug\\".
-          Creating directory "cmTC_032be.dir\\Debug\\cmTC_032be.tlog\\".
+          Creating directory "cmTC_429b3.dir\\Debug\\".
+          Creating directory "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-81f73i\\Debug\\".
+          Creating directory "cmTC_429b3.dir\\Debug\\cmTC_429b3.tlog\\".
         InitializeBuildStatus:
-          Creating "cmTC_032be.dir\\Debug\\cmTC_032be.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Creating "cmTC_429b3.dir\\Debug\\cmTC_429b3.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
         ClCompile:
-          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CMAKE_HAVE_LIBC_PTHREAD /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_032be.dir\\Debug\\\\" /Fd"cmTC_032be.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-cf35vv\\src.c"
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CMAKE_HAVE_LIBC_PTHREAD /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_429b3.dir\\Debug\\\\" /Fd"cmTC_429b3.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-81f73i\\src.c"
           Microsoft (R) C/C++ Optimizing Compiler Version 19.35.32216.1 for x64
           src.c
           Copyright (C) Microsoft Corporation.  All rights reserved.
-          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CMAKE_HAVE_LIBC_PTHREAD /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_032be.dir\\Debug\\\\" /Fd"cmTC_032be.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-cf35vv\\src.c"
-        C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-cf35vv\\src.c(1,10): fatal  error C1083: Cannot open include file: 'pthread.h': No such file or directory [C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-cf35vv\\cmTC_032be.vcxproj]
-        Done Building Project "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-cf35vv\\cmTC_032be.vcxproj" (default targets) -- FAILED.
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CMAKE_HAVE_LIBC_PTHREAD /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_429b3.dir\\Debug\\\\" /Fd"cmTC_429b3.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-81f73i\\src.c"
+        C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-81f73i\\src.c(1,10): fatal  error C1083: Cannot open include file: 'pthread.h': No such file or directory [C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-81f73i\\cmTC_429b3.vcxproj]
+        Done Building Project "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-81f73i\\cmTC_429b3.vcxproj" (default targets) -- FAILED.
         
         Build FAILED.
         
-        "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-cf35vv\\cmTC_032be.vcxproj" (default target) (1) ->
+        "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-81f73i\\cmTC_429b3.vcxproj" (default target) (1) ->
         (ClCompile target) -> 
-          C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-cf35vv\\src.c(1,10): fatal  error C1083: Cannot open include file: 'pthread.h': No such file or directory [C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-cf35vv\\cmTC_032be.vcxproj]
+          C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-81f73i\\src.c(1,10): fatal  error C1083: Cannot open include file: 'pthread.h': No such file or directory [C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-81f73i\\cmTC_429b3.vcxproj]
         
             0 Warning(s)
             1 Error(s)
         
-        Time Elapsed 00:00:00.38
+        Time Elapsed 00:00:00.27
         
       exitCode: 1
   -
@@ -296,8 +296,8 @@ events:
     checks:
       - "Looking for pthread_create in pthreads"
     directories:
-      source: "C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW refactored/build/CMakeFiles/CMakeScratch/TryCompile-t2tj0c"
-      binary: "C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW refactored/build/CMakeFiles/CMakeScratch/TryCompile-t2tj0c"
+      source: "C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW/build/CMakeFiles/CMakeScratch/TryCompile-lmnddr"
+      binary: "C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW/build/CMakeFiles/CMakeScratch/TryCompile-lmnddr"
     cmakeVariables:
       CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS"
       CMAKE_C_FLAGS_DEBUG: "/Zi /Ob0 /Od /RTC1"
@@ -307,40 +307,40 @@ events:
       variable: "CMAKE_HAVE_PTHREADS_CREATE"
       cached: true
       stdout: |
-        Change Dir: C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW refactored/build/CMakeFiles/CMakeScratch/TryCompile-t2tj0c
+        Change Dir: C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW/build/CMakeFiles/CMakeScratch/TryCompile-lmnddr
         
-        Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_c750e.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n && MSBuild version 17.5.1+f6fdcf537 for .NET Framework
-        Build started 4/28/2023 4:09:15 PM.
+        Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_5c3ad.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n && MSBuild version 17.5.1+f6fdcf537 for .NET Framework
+        Build started 4/29/2023 1:55:04 AM.
         Included response file: C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\amd64\\MSBuild.rsp
         
-        Project "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-t2tj0c\\cmTC_c750e.vcxproj" on node 1 (default targets).
+        Project "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-lmnddr\\cmTC_5c3ad.vcxproj" on node 1 (default targets).
         PrepareForBuild:
-          Creating directory "cmTC_c750e.dir\\Debug\\".
-          Creating directory "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-t2tj0c\\Debug\\".
-          Creating directory "cmTC_c750e.dir\\Debug\\cmTC_c750e.tlog\\".
+          Creating directory "cmTC_5c3ad.dir\\Debug\\".
+          Creating directory "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-lmnddr\\Debug\\".
+          Creating directory "cmTC_5c3ad.dir\\Debug\\cmTC_5c3ad.tlog\\".
         InitializeBuildStatus:
-          Creating "cmTC_c750e.dir\\Debug\\cmTC_c750e.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Creating "cmTC_5c3ad.dir\\Debug\\cmTC_5c3ad.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
         ClCompile:
-          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_c750e.dir\\Debug\\\\" /Fd"cmTC_c750e.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-t2tj0c\\CheckFunctionExists.c"
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_5c3ad.dir\\Debug\\\\" /Fd"cmTC_5c3ad.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-lmnddr\\CheckFunctionExists.c"
           Microsoft (R) C/C++ Optimizing Compiler Version 19.35.32216.1 for x64
           CheckFunctionExists.c
           Copyright (C) Microsoft Corporation.  All rights reserved.
-          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_c750e.dir\\Debug\\\\" /Fd"cmTC_c750e.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-t2tj0c\\CheckFunctionExists.c"
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_5c3ad.dir\\Debug\\\\" /Fd"cmTC_5c3ad.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-lmnddr\\CheckFunctionExists.c"
         Link:
-          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-t2tj0c\\Debug\\cmTC_c750e.exe" /INCREMENTAL /ILK:"cmTC_c750e.dir\\Debug\\cmTC_c750e.ilk" /NOLOGO pthreads.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW refactored/build/CMakeFiles/CMakeScratch/TryCompile-t2tj0c/Debug/cmTC_c750e.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW refactored/build/CMakeFiles/CMakeScratch/TryCompile-t2tj0c/Debug/cmTC_c750e.lib" /MACHINE:X64  /machine:x64 cmTC_c750e.dir\\Debug\\CheckFunctionExists.obj
-        LINK : fatal error LNK1104: cannot open file 'pthreads.lib' [C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-t2tj0c\\cmTC_c750e.vcxproj]
-        Done Building Project "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-t2tj0c\\cmTC_c750e.vcxproj" (default targets) -- FAILED.
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-lmnddr\\Debug\\cmTC_5c3ad.exe" /INCREMENTAL /ILK:"cmTC_5c3ad.dir\\Debug\\cmTC_5c3ad.ilk" /NOLOGO pthreads.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW/build/CMakeFiles/CMakeScratch/TryCompile-lmnddr/Debug/cmTC_5c3ad.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW/build/CMakeFiles/CMakeScratch/TryCompile-lmnddr/Debug/cmTC_5c3ad.lib" /MACHINE:X64  /machine:x64 cmTC_5c3ad.dir\\Debug\\CheckFunctionExists.obj
+        LINK : fatal error LNK1104: cannot open file 'pthreads.lib' [C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-lmnddr\\cmTC_5c3ad.vcxproj]
+        Done Building Project "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-lmnddr\\cmTC_5c3ad.vcxproj" (default targets) -- FAILED.
         
         Build FAILED.
         
-        "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-t2tj0c\\cmTC_c750e.vcxproj" (default target) (1) ->
+        "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-lmnddr\\cmTC_5c3ad.vcxproj" (default target) (1) ->
         (Link target) -> 
-          LINK : fatal error LNK1104: cannot open file 'pthreads.lib' [C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-t2tj0c\\cmTC_c750e.vcxproj]
+          LINK : fatal error LNK1104: cannot open file 'pthreads.lib' [C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-lmnddr\\cmTC_5c3ad.vcxproj]
         
             0 Warning(s)
             1 Error(s)
         
-        Time Elapsed 00:00:00.43
+        Time Elapsed 00:00:00.33
         
       exitCode: 1
   -
@@ -357,8 +357,8 @@ events:
     checks:
       - "Looking for pthread_create in pthread"
     directories:
-      source: "C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW refactored/build/CMakeFiles/CMakeScratch/TryCompile-6cpt84"
-      binary: "C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW refactored/build/CMakeFiles/CMakeScratch/TryCompile-6cpt84"
+      source: "C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW/build/CMakeFiles/CMakeScratch/TryCompile-e0vk14"
+      binary: "C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW/build/CMakeFiles/CMakeScratch/TryCompile-e0vk14"
     cmakeVariables:
       CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS"
       CMAKE_C_FLAGS_DEBUG: "/Zi /Ob0 /Od /RTC1"
@@ -368,40 +368,40 @@ events:
       variable: "CMAKE_HAVE_PTHREAD_CREATE"
       cached: true
       stdout: |
-        Change Dir: C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW refactored/build/CMakeFiles/CMakeScratch/TryCompile-6cpt84
+        Change Dir: C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW/build/CMakeFiles/CMakeScratch/TryCompile-e0vk14
         
-        Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_4525a.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n && MSBuild version 17.5.1+f6fdcf537 for .NET Framework
-        Build started 4/28/2023 4:09:15 PM.
+        Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_3dcee.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n && MSBuild version 17.5.1+f6fdcf537 for .NET Framework
+        Build started 4/29/2023 1:55:04 AM.
         Included response file: C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\amd64\\MSBuild.rsp
         
-        Project "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6cpt84\\cmTC_4525a.vcxproj" on node 1 (default targets).
+        Project "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-e0vk14\\cmTC_3dcee.vcxproj" on node 1 (default targets).
         PrepareForBuild:
-          Creating directory "cmTC_4525a.dir\\Debug\\".
-          Creating directory "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6cpt84\\Debug\\".
-          Creating directory "cmTC_4525a.dir\\Debug\\cmTC_4525a.tlog\\".
+          Creating directory "cmTC_3dcee.dir\\Debug\\".
+          Creating directory "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-e0vk14\\Debug\\".
+          Creating directory "cmTC_3dcee.dir\\Debug\\cmTC_3dcee.tlog\\".
         InitializeBuildStatus:
-          Creating "cmTC_4525a.dir\\Debug\\cmTC_4525a.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Creating "cmTC_3dcee.dir\\Debug\\cmTC_3dcee.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
         ClCompile:
-          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_4525a.dir\\Debug\\\\" /Fd"cmTC_4525a.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6cpt84\\CheckFunctionExists.c"
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_3dcee.dir\\Debug\\\\" /Fd"cmTC_3dcee.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-e0vk14\\CheckFunctionExists.c"
           Microsoft (R) C/C++ Optimizing Compiler Version 19.35.32216.1 for x64
           CheckFunctionExists.c
           Copyright (C) Microsoft Corporation.  All rights reserved.
-          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_4525a.dir\\Debug\\\\" /Fd"cmTC_4525a.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6cpt84\\CheckFunctionExists.c"
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_3dcee.dir\\Debug\\\\" /Fd"cmTC_3dcee.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TC /errorReport:queue "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-e0vk14\\CheckFunctionExists.c"
         Link:
-          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6cpt84\\Debug\\cmTC_4525a.exe" /INCREMENTAL /ILK:"cmTC_4525a.dir\\Debug\\cmTC_4525a.ilk" /NOLOGO pthread.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW refactored/build/CMakeFiles/CMakeScratch/TryCompile-6cpt84/Debug/cmTC_4525a.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW refactored/build/CMakeFiles/CMakeScratch/TryCompile-6cpt84/Debug/cmTC_4525a.lib" /MACHINE:X64  /machine:x64 cmTC_4525a.dir\\Debug\\CheckFunctionExists.obj
-        LINK : fatal error LNK1104: cannot open file 'pthread.lib' [C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6cpt84\\cmTC_4525a.vcxproj]
-        Done Building Project "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6cpt84\\cmTC_4525a.vcxproj" (default targets) -- FAILED.
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-e0vk14\\Debug\\cmTC_3dcee.exe" /INCREMENTAL /ILK:"cmTC_3dcee.dir\\Debug\\cmTC_3dcee.ilk" /NOLOGO pthread.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW/build/CMakeFiles/CMakeScratch/TryCompile-e0vk14/Debug/cmTC_3dcee.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/andre/OneDrive/Documents/Tue/Research Project/Fast-VW/Fast-VW/build/CMakeFiles/CMakeScratch/TryCompile-e0vk14/Debug/cmTC_3dcee.lib" /MACHINE:X64  /machine:x64 cmTC_3dcee.dir\\Debug\\CheckFunctionExists.obj
+        LINK : fatal error LNK1104: cannot open file 'pthread.lib' [C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-e0vk14\\cmTC_3dcee.vcxproj]
+        Done Building Project "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-e0vk14\\cmTC_3dcee.vcxproj" (default targets) -- FAILED.
         
         Build FAILED.
         
-        "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6cpt84\\cmTC_4525a.vcxproj" (default target) (1) ->
+        "C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-e0vk14\\cmTC_3dcee.vcxproj" (default target) (1) ->
         (Link target) -> 
-          LINK : fatal error LNK1104: cannot open file 'pthread.lib' [C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW refactored\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6cpt84\\cmTC_4525a.vcxproj]
+          LINK : fatal error LNK1104: cannot open file 'pthread.lib' [C:\\Users\\andre\\OneDrive\\Documents\\Tue\\Research Project\\Fast-VW\\Fast-VW\\build\\CMakeFiles\\CMakeScratch\\TryCompile-e0vk14\\cmTC_3dcee.vcxproj]
         
             0 Warning(s)
             1 Error(s)
         
-        Time Elapsed 00:00:00.43
+        Time Elapsed 00:00:00.33
         
       exitCode: 1
 ...

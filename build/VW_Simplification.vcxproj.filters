@@ -1,45 +1,45 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW refactored\Fast_simplifier.cpp">
+    <ClCompile Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW\Fast_simplifier.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW refactored\Slow_simplifier.cpp">
+    <ClCompile Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW\Slow_simplifier.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW refactored\Test.cpp">
+    <ClCompile Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW\Test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW refactored\Utils.cpp">
+    <ClCompile Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW\Utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW refactored\main.cpp">
+    <ClCompile Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW refactored\Fast_simplifier.hpp">
+    <ClInclude Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW\Fast_simplifier.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW refactored\Slow_simplifier.hpp">
+    <ClInclude Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW\Slow_simplifier.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW refactored\Test.hpp">
+    <ClInclude Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW\Test.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW refactored\Utils.hpp">
+    <ClInclude Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW\Utils.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW refactored\CMakeLists.txt" />
+    <CustomBuild Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{4FCF7F00-A35E-37E4-AE83-3EEB83DA9759}</UniqueIdentifier>
+      <UniqueIdentifier>{2D073D10-61F6-3792-9FF4-C05C45E2799B}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{BDFB6717-BFB5-3540-8236-B41F1132A555}</UniqueIdentifier>
+      <UniqueIdentifier>{77ADAC82-5D56-3E44-8992-AFEDB26ADFBC}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -1,7 +1,3 @@
-#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-#include <CGAL/Constrained_Delaunay_triangulation_2.h>
-
 #include "Fast_simplifier.hpp"
 #include "Slow_simplifier.hpp"
 #include "Test.hpp"
@@ -23,7 +19,7 @@ int main()
 	// Sample way of instantiating VW_computator
 	auto start_time_full_algo = std::chrono::high_resolution_clock::now();
 
-	Fast_simplifier<CDT> vw("BoundaryBlock");
+	Fast_simplifier<CDT> vw("StressTests/India");
 	std::cout << "Unknown point detections: " << vw.get_UPD() << std::endl;
 	std::cout << "Number of vertices removes: " << vw.result.size() << std::endl;
 
