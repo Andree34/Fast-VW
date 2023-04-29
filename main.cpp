@@ -17,27 +17,22 @@ int main()
 	/////////////////////////////////////////////////
 
 	// Sample way of instantiating VW_computator
-	auto start_time_full_algo = std::chrono::high_resolution_clock::now();
 
-	Fast_simplifier<CDT> vw("StressTests/India");
-	std::cout << "Unknown point detections: " << vw.get_UPD() << std::endl;
-	std::cout << "Number of vertices removes: " << vw.result.size() << std::endl;
+	/*Fast_simplifier<CDT> vw("StressTests/5");
+	vw.print_all_metrics();*/
 
-	//std::cout << "First 100 vertices removed: " << std::endl;
-	//for (size_t i = 0; i < 100; i++)
-	//	std::cout << vw.result[i] << std::endl;
+	////std::cout << "First 100 vertices removed: " << std::endl;
+	////for (size_t i = 0; i < 100; i++)
+	////	std::cout << vw.result[i] << std::endl;
 
-	auto end_time_full_algo = std::chrono::high_resolution_clock::now();
-	auto duration_full_algo = std::chrono::duration_cast<std::chrono::milliseconds>(end_time_full_algo - start_time_full_algo);
+	//vw.print_current_polygon();
 
-	std::cout << "Milliseconds passed entire algorithm (test case " + vw.name + "): " << duration_full_algo.count() << " milliseconds." << std::endl;
-	std::cout << "Point in triangle checks (test case " + vw.name + "): " << vw.get_PITC() << std::endl;
-	vw.print_current_polygon();
+	run_stress_tests();
 
 	/////////////////////////////////////////////////
 
-	//Test<>::run_tests();
-	//std::cout << "Next batch:" << std::endl;
-	//Test<Fast_simplifier<CT>>::run_tests();
+	/*Test<>::run_tests();
+	std::cout << "Next batch:" << std::endl;
+	Test<Fast_simplifier<CT>>::run_tests();*/
 	//IPE::process_file("Arrow");
 }

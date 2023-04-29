@@ -1,8 +1,12 @@
 #include "Fast_simplifier.hpp"
+#include "Utils.hpp"
 
 template<typename T>
 Fast_simplifier<T>::Fast_simplifier(std::string input_folder_name, bool auto_simplify) :name(input_folder_name)
 {
+	start_time = std::chrono::high_resolution_clock::now();
+	end_time = start_time;
+
 	std::ifstream in("../data/" + input_folder_name + "/data.in");
 	std::istream_iterator<Point> begin(in);
 	std::istream_iterator<Point> end;
@@ -26,8 +30,11 @@ Fast_simplifier<T>::Fast_simplifier(std::string input_folder_name, bool auto_sim
 	ct.insert_constraint(points.begin(), points.end(), true);
 	init_vertex_count = vertices.size();
 
-	if(auto_simplify)
+	if (auto_simplify)
+	{
 		simplify();
+		end_time = std::chrono::high_resolution_clock::now();
+	}
 }
 
 template<typename T>
@@ -54,6 +61,22 @@ template<typename T>
 inline long long Fast_simplifier<T>::get_UPD() const
 {
 	return unknown_point_detections;
+}
+
+template<typename T> template<typename Time_unit>
+long long Fast_simplifier<T>::get_runtime()
+{
+	time_unit = time_type<Time_unit>();
+	return std::chrono::duration_cast<Time_unit>(end_time - start_time).count();
+}
+
+template<typename T>
+void Fast_simplifier<T>::print_all_metrics()
+{
+	std::cout << "Number of vertices initial polygon (test case " + name + "): " << init_vertex_count << std::endl;
+	std::cout << "Runtime of algorithm (test case " + name + "): " << get_runtime<>() << " " + time_unit << std::endl;
+	std::cout << "Point in triangle checks (test case " + name + "): " << get_PITC() << std::endl;
+	std::cout << "Unknown point detections (test case " + name + "): " << get_UPD() << std::endl;
 }
 
 template<typename T>

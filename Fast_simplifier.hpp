@@ -29,6 +29,7 @@ public:
 	using Vertex_iterator = typename std::list<std::pair<Vertex_handle, int>>::iterator;
 	using Map_iterator = typename std::map<std::pair<K::FT, int>, Vertex_handle>::iterator;
 	using Neighbours = typename std::pair<Vertex_handle, Vertex_handle>;
+	using Timestamp = std::chrono::steady_clock::time_point;
 
 	// name of the folder where the data was taken from
 	std::string name;
@@ -59,6 +60,14 @@ public:
 	// returns the number of points added by CGAL detected during the algorithm run
 	long long get_UPD() const;
 
+	// returns the time it took to run the algorithm on the given input
+	// only works if shape was auto_simplified
+	template<typename Time_unit = std::chrono::milliseconds>
+	long long get_runtime();
+
+	// prints all registered metrics
+	void print_all_metrics();
+
 	/// <summary>
 	/// PRE: "remaining_vertices" <= vertices.size()
 	/// 
@@ -74,6 +83,10 @@ private:
 	int point_in_triangle_checks = 0;
 	int unknown_point_detections = 0;
 	int init_vertex_count;
+
+	Timestamp start_time;
+	Timestamp end_time;
+	std::string time_unit;
 
 	// points given in the input
 	std::list<std::pair<Vertex_handle, int>> vertices;

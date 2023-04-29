@@ -14,6 +14,9 @@ public:
 	// add test here
 	static inline std::vector<std::string> test_names = {
 		"Arrow",
+		"TallArrow",
+		"SimpleCollinear",
+		"RationalNumbers",
 		"BoundaryBlock",
 		"BoundaryBlock2"
 	};
