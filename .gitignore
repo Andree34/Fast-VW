@@ -62,6 +62,8 @@ ipch/
 *.zip
 *.7z
 *.rar
+data/StressTests
+data/OldStressTests
 .vs/
 .vscode/
 *.sln.docstates

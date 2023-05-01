@@ -321,6 +321,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW\Core.hpp" />
     <ClInclude Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW\Fast_simplifier.hpp" />
     <ClInclude Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW\Slow_simplifier.hpp" />
     <ClInclude Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW\Test.hpp" />

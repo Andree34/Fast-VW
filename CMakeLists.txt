@@ -7,6 +7,7 @@ find_package(CGAL REQUIRED)
 
 # Add header and source files to project
 set(HEADER_FILES
+    Core.hpp
     Fast_simplifier.hpp
     Slow_simplifier.hpp
     Test.hpp

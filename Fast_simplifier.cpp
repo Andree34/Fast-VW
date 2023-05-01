@@ -28,7 +28,7 @@ Fast_simplifier<T>::Fast_simplifier(std::string input_folder_name, bool auto_sim
 
 	// init CT
 	ct.insert_constraint(points.begin(), points.end(), true);
-	init_vertex_count = vertices.size();
+	init_vertex_count = (int)vertices.size();
 
 	if (auto_simplify)
 	{
@@ -47,8 +47,9 @@ inline void Fast_simplifier<T>::print_result() const
 template<typename T>
 void Fast_simplifier<T>::print_current_polygon() const
 {
+	std::cout << std::setprecision(4) << std::fixed;
 	for (auto& [vh, index] : vertices)
-		std::cerr << vh->point().x() << " " << vh->point().y() << std::endl;
+		std::cout << vh->point().x() << " " << vh->point().y() << std::endl;
 }
 
 template<typename T>
@@ -63,20 +64,39 @@ inline long long Fast_simplifier<T>::get_UPD() const
 	return unknown_point_detections;
 }
 
-template<typename T> template<typename Time_unit>
-long long Fast_simplifier<T>::get_runtime()
+template<typename T>
+double Fast_simplifier<T>::get_avg_degree() const
 {
-	time_unit = time_type<Time_unit>();
-	return std::chrono::duration_cast<Time_unit>(end_time - start_time).count();
+	return (double)total_degree / (double)degree_registrations;
 }
 
 template<typename T>
-void Fast_simplifier<T>::print_all_metrics()
+void Fast_simplifier<T>::polygon_to_ipe(bool original)
 {
-	std::cout << "Number of vertices initial polygon (test case " + name + "): " << init_vertex_count << std::endl;
-	std::cout << "Runtime of algorithm (test case " + name + "): " << get_runtime<>() << " " + time_unit << std::endl;
-	std::cout << "Point in triangle checks (test case " + name + "): " << get_PITC() << std::endl;
-	std::cout << "Unknown point detections (test case " + name + "): " << get_UPD() << std::endl;
+	IPE::Polygon polygon;
+	for (auto [vh, index] : vertices)
+	{
+		auto x = vh->point().x();
+		auto y = vh->point().y();
+		polygon.push_back({ CGAL::to_double(x), CGAL::to_double(y) });
+	}
+
+	IPE::polygon_to_IPE(name, polygon, original);
+}
+
+template<typename T>
+void Fast_simplifier<T>::create_ipe_polygons(std::vector<int> polygon_sizes)
+{
+	sort(polygon_sizes.begin(), polygon_sizes.end(), std::greater<>());
+
+	for (auto vertex_count : polygon_sizes)
+	{
+		if (vertex_count > vertices.size())
+			continue;
+
+		simplify(vertex_count);
+		polygon_to_ipe();
+	}
 }
 
 template<typename T>
@@ -215,6 +235,10 @@ inline bool Fast_simplifier<T>::is_in_triangle(Point p, Point tr1, Point tr2, Po
 template<typename T>
 inline int Fast_simplifier<T>::get_block(Vertex_handle vh)
 {
+	// log degree of vertex
+	++degree_registrations;
+	total_degree += ct.degree(vh);
+
 	// get the point's neighbour triangle
 	auto [nb1, nb2] = get_neighbours(vh);
 

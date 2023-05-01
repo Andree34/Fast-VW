@@ -1,7 +1,8 @@
 #include "Utils.hpp"
 #include "Fast_simplifier.hpp"
-#include <string>
 #include <chrono>
+#include <iomanip>
+#include <algorithm>
 
 void IPE::process_file(std::string name)
 {
@@ -18,16 +19,130 @@ void IPE::process_file(std::string name)
 		fout << str1 << " " << str2 << std::endl;
 }
 
-// PRE: count <= 33
-void run_stress_tests(int count)
+void IPE::normalize_polygon(Polygon& polygon, double bound, double margin)
 {
+	using Point = std::pair<double, double>;
+
+	// make all coordinates positive
+	double minx = min_element(polygon.begin(), polygon.end(), [](Point p1, Point p2)
+		{return p1.first < p2.first; })->first;
+	double miny = min_element(polygon.begin(), polygon.end(), [](Point p1, Point p2)
+		{return p1.second < p2.second; })->second;
+	for (auto& [x, y] : polygon)
+	{
+		x -= minx;
+		y -= miny;
+	}
+
+	// scale all coordinates to be in [-bound, bound] on both axes
+	double maxx = max_element(polygon.begin(), polygon.end(), [](Point p1, Point p2)
+		{return abs(p1.first) < abs(p2.first); })->first;
+	double maxy = max_element(polygon.begin(), polygon.end(), [](Point p1, Point p2) 
+		{return abs(p1.second) < abs(p2.second); })->second;
+	double div_ratio = std::max(maxx, maxy) / bound;
+
+	for (auto& [x, y] : polygon)
+	{
+		x /= div_ratio;
+		y /= div_ratio;
+
+		x += margin;
+		y += margin;
+	}
+}
+
+void IPE::polygon_to_IPE(std::string name, Polygon polygon, bool original)
+{
+	assert(polygon.size() >= 3 && "Simplified polygon has less than 3 vertices.");
+
+	// bounds the polygon to [-bound, bound] on both axes
+	IPE::normalize_polygon(polygon);
+
+	std::string file_name = (original ? "original_" : "simplified_") + std::to_string(polygon.size());
+	std::ofstream fout("../data/" + name + "/" + file_name + ".ipe");
+	fout << "<?xml version='1.0' encoding='utf-8'?>" << std::endl;
+	fout << "<ipe version=\"70212\" creator=\"miniipe\"><ipestyle name=\"miniipe\" /><page><layer name=\"my_layer\" /><path stroke=\"black\" fill=\"#000\" layer=\"my layer\">";
+	fout << std::setprecision(4) << std::fixed;
+	fout << polygon[0].first << " " << polygon[0].second << " m ";
+	for (size_t i = 1; i < polygon.size(); i++)
+	{
+		auto [x, y] = polygon[i];
+		fout << x << " " << y << " l  ";
+	}
+	fout << "h </path></page></ipe>";
+	fout.close();
+}
+
+// TODO: move this to core.cpp
+std::ostream& operator<<(std::ostream& os, const Metric& metric)
+{
+	os << "Number of vertices initial polygon (test case " + metric.test_name + "): " << metric.init_vertex_count << std::endl;
+	os << "Runtime of algorithm (test case " + metric.test_name + "): " << metric.runtime.first << " " + metric.runtime.second << std::endl;
+	os << "Point in triangle checks (test case " + metric.test_name + "): " << metric.pitc << std::endl;
+	os << "Unknown point detections (test case " + metric.test_name + "): " << metric.upd << std::endl;
+	os << "Average vertex degree (test case " + metric.test_name + "): " << metric.avg_degree << std::endl;
+	return os;
+}
+
+// PRE: count <= 5236
+template<typename T>
+void run_stress_tests(std::vector<int> to_store, int count)
+{
+	for (size_t i = 32; i < count; i++)
+	{
+		std::string name = std::to_string(i);
+		Fast_simplifier<T> simplifier("StressTests/" + name, false);
+		simplifier.polygon_to_ipe(true);
+		simplifier.create_ipe_polygons(to_store);
+		std::cout << "Polygon " << i << " done" << std::endl;
+	}
+}
+
+template<typename T, typename Time_unit>
+void generate_metrics_csv(bool console_output, int count)
+{
+	std::ofstream fout("../data/metrics.csv");
+	fout << "TestName,VertexCount,Runtime(" + time_type<Time_unit>() + "),PITC,UPD,AvgDegree" << std::endl;
 	for (size_t i = 0; i < count; i++)
 	{
 		std::string name = std::to_string(i);
-		Fast_simplifier simplifier("StressTests/" + name);
-		simplifier.print_all_metrics();
+		Fast_simplifier<T> simplifier("StressTests/" + name);
+
+		if (console_output)
+		{
+			simplifier.print_all_metrics<Time_unit>();
+			std::cout << std::endl;
+		}
+		
+		Metric metric = simplifier.get_metrics<Time_unit>();
+		fout << metric.test_name << ","
+			 << metric.init_vertex_count << ","
+			 << metric.runtime.first << ","
+			 << metric.pitc << ","
+			 << metric.upd << ","
+			 << metric.avg_degree << ","
+			 << std::endl;
 	}
+
+	fout.close();
 }
+
+// yay code bloat
+template void run_stress_tests<CDT>(std::vector<int> to_store, int count);
+template void run_stress_tests<CT>(std::vector<int> to_store, int count);
+
+template void generate_metrics_csv<CDT, std::chrono::nanoseconds >(bool console_output, int count);
+template void generate_metrics_csv<CDT, std::chrono::microseconds>(bool console_output, int count);
+template void generate_metrics_csv<CDT, std::chrono::milliseconds>(bool console_output, int count);
+template void generate_metrics_csv<CDT, std::chrono::seconds     >(bool console_output, int count);
+template void generate_metrics_csv<CDT, std::chrono::minutes     >(bool console_output, int count);
+template void generate_metrics_csv<CDT, std::chrono::hours       >(bool console_output, int count);
+template void generate_metrics_csv<CT, std::chrono::nanoseconds  >(bool console_output, int count);
+template void generate_metrics_csv<CT, std::chrono::microseconds >(bool console_output, int count);
+template void generate_metrics_csv<CT, std::chrono::milliseconds >(bool console_output, int count);
+template void generate_metrics_csv<CT, std::chrono::seconds      >(bool console_output, int count);
+template void generate_metrics_csv<CT, std::chrono::minutes      >(bool console_output, int count);
+template void generate_metrics_csv<CT, std::chrono::hours        >(bool console_output, int count);
 
 template<typename T> std::string time_type() { return "unknown"; }
 template<> std::string time_type<std::chrono::nanoseconds >() { return "nanoseconds"; }

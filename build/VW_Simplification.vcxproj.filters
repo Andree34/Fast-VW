@@ -18,6 +18,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW\Core.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW\Fast_simplifier.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>

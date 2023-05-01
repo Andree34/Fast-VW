@@ -1,9 +1,6 @@
 #pragma once
 
-#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-#include <CGAL/Constrained_Delaunay_triangulation_2.h>
-
+#include "Core.hpp"
 #include <cassert>
 #include <iostream>
 #include <fstream>
@@ -11,11 +8,7 @@
 #include <vector>
 #include <map>
 #include <chrono>
-
-typedef CGAL::Exact_predicates_exact_constructions_kernel K;
-typedef CGAL::No_constraint_intersection_tag                               Itag;
-typedef CGAL::Constrained_Delaunay_triangulation_2<K, CGAL::Default, Itag> CDT;
-typedef CGAL::Constrained_triangulation_2<K, CGAL::Default, Itag> CT;
+#include <iomanip>
 
 template<typename T = CDT>
 class Fast_simplifier
@@ -60,13 +53,33 @@ public:
 	// returns the number of points added by CGAL detected during the algorithm run
 	long long get_UPD() const;
 
+	// returns the average degree of the vertices that are being checked for blocks
+	double get_avg_degree() const;
+
 	// returns the time it took to run the algorithm on the given input
 	// only works if shape was auto_simplified
 	template<typename Time_unit = std::chrono::milliseconds>
-	long long get_runtime();
+	Metric::Runtime get_runtime()
+	{
+		return { std::chrono::duration_cast<Time_unit>(end_time - start_time).count(), time_type<Time_unit>() };
+	}
+
+	template<typename Time_unit = std::chrono::milliseconds>
+	Metric get_metrics()
+	{
+		return Metric(init_vertex_count, name, get_runtime<Time_unit>(), get_PITC(), get_UPD(), get_avg_degree());
+	}
 
 	// prints all registered metrics
-	void print_all_metrics();
+	template<typename Time_unit = std::chrono::milliseconds>
+	void print_all_metrics()
+	{
+		std::cout << get_metrics<Time_unit>();
+	}
+
+	void polygon_to_ipe(bool original = false);
+
+	void create_ipe_polygons(std::vector<int> polygon_sizes);
 
 	/// <summary>
 	/// PRE: "remaining_vertices" <= vertices.size()
@@ -84,9 +97,11 @@ private:
 	int unknown_point_detections = 0;
 	int init_vertex_count;
 
+	int total_degree = 0;
+	int degree_registrations = 0;
+
 	Timestamp start_time;
 	Timestamp end_time;
-	std::string time_unit;
 
 	// points given in the input
 	std::list<std::pair<Vertex_handle, int>> vertices;

@@ -1,3 +1,4 @@
+#include "Core.hpp"
 #include "Fast_simplifier.hpp"
 #include "Slow_simplifier.hpp"
 #include "Test.hpp"
@@ -16,23 +17,23 @@ int main()
 
 	/////////////////////////////////////////////////
 
-	// Sample way of instantiating VW_computator
+	// Sample way of using a simplifier
 
-	/*Fast_simplifier<CDT> vw("StressTests/5");
-	vw.print_all_metrics();*/
-
-	////std::cout << "First 100 vertices removed: " << std::endl;
-	////for (size_t i = 0; i < 100; i++)
-	////	std::cout << vw.result[i] << std::endl;
-
+	//Fast_simplifier<CDT> vw("StressTests/5");
+	//vw.print_all_metrics();
+	//vw.create_ipe_polygons({3, 5, 10, 20, 50, 99,  100, 200, 500, 1000, 2000, 5000});
 	//vw.print_current_polygon();
-
-	run_stress_tests();
 
 	/////////////////////////////////////////////////
 
-	/*Test<>::run_tests();
-	std::cout << "Next batch:" << std::endl;
-	Test<Fast_simplifier<CT>>::run_tests();*/
-	//IPE::process_file("Arrow");
+	// Sample way of using util functions
+	run_stress_tests({ 3, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000, 500000});
+	//generate_metrics_csv();
+
+	/////////////////////////////////////////////////
+
+	//Test<>::run_tests();
+	//std::cout << "Next batch:" << std::endl;
+	//Test<Fast_simplifier<CT>>::run_tests();
+	//IPE::process_file("StressTests/test");
 }
