@@ -56,7 +56,7 @@ void IPE::polygon_to_IPE(std::string name, Polygon polygon, bool original)
 	assert(polygon.size() >= 3 && "Simplified polygon has less than 3 vertices.");
 
 	// bounds the polygon to [-bound, bound] on both axes
-	IPE::normalize_polygon(polygon);
+	IPE::normalize_polygon(polygon, 5000);
 
 	std::string file_name = (original ? "original_" : "simplified_") + std::to_string(polygon.size());
 	std::ofstream fout("../data/" + name + "/" + file_name + ".ipe");
@@ -73,22 +73,11 @@ void IPE::polygon_to_IPE(std::string name, Polygon polygon, bool original)
 	fout.close();
 }
 
-// TODO: move this to core.cpp
-std::ostream& operator<<(std::ostream& os, const Metric& metric)
-{
-	os << "Number of vertices initial polygon (test case " + metric.test_name + "): " << metric.init_vertex_count << std::endl;
-	os << "Runtime of algorithm (test case " + metric.test_name + "): " << metric.runtime.first << " " + metric.runtime.second << std::endl;
-	os << "Point in triangle checks (test case " + metric.test_name + "): " << metric.pitc << std::endl;
-	os << "Unknown point detections (test case " + metric.test_name + "): " << metric.upd << std::endl;
-	os << "Average vertex degree (test case " + metric.test_name + "): " << metric.avg_degree << std::endl;
-	return os;
-}
-
 // PRE: count <= 5236
 template<typename T>
 void run_stress_tests(std::vector<int> to_store, int count)
 {
-	for (size_t i = 32; i < count; i++)
+	for (size_t i = 0; i < count; i++)
 	{
 		std::string name = std::to_string(i);
 		Fast_simplifier<T> simplifier("StressTests/" + name, false);

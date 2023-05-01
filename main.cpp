@@ -19,9 +19,10 @@ int main()
 
 	// Sample way of using a simplifier
 
-	//Fast_simplifier<CDT> vw("StressTests/5");
+	//Fast_simplifier<CDT> vw("StressTests/0", false);
+	//vw.polygon_to_ipe(true);
 	//vw.print_all_metrics();
-	//vw.create_ipe_polygons({3, 5, 10, 20, 50, 99,  100, 200, 500, 1000, 2000, 5000});
+	//vw.create_ipe_polygons({ 3, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000, 500000});
 	//vw.print_current_polygon();
 
 	/////////////////////////////////////////////////

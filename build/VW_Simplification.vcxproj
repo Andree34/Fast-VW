@@ -326,6 +326,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClInclude Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW\Slow_simplifier.hpp" />
     <ClInclude Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW\Test.hpp" />
     <ClInclude Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW\Utils.hpp" />
+    <ClCompile Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW\Core.cpp" />
     <ClCompile Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW\Fast_simplifier.cpp" />
     <ClCompile Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW\Slow_simplifier.cpp" />
     <ClCompile Include="C:\Users\andre\OneDrive\Documents\Tue\Research Project\Fast-VW\Fast-VW\Test.cpp" />

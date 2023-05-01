@@ -15,6 +15,7 @@ set(HEADER_FILES
 )
 
 set(SOURCE_FILES
+    Core.cpp
     Fast_simplifier.cpp
     Slow_simplifier.cpp
     Test.cpp
