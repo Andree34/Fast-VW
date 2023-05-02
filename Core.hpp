@@ -23,9 +23,13 @@ struct Metric
 	long long pitc;
 	long long upd;		// might not be useful, this was more important during testing
 	double avg_degree;
+	double pitc_to_vertex_count_ratio;
 
 	Metric(long long init_vertex_count, std::string test_name, Runtime runtime, long long pitc, long long upd, double avg_degree) :
-		init_vertex_count(init_vertex_count), test_name(test_name), runtime(runtime), pitc(pitc), upd(upd), avg_degree(avg_degree) {}
+		init_vertex_count(init_vertex_count), test_name(test_name), runtime(runtime), pitc(pitc), upd(upd), avg_degree(avg_degree) 
+	{
+		pitc_to_vertex_count_ratio = (double)pitc / (double)init_vertex_count;
+	}
 
 	friend std::ostream& operator<<(std::ostream& os, const Metric& metric);
 };

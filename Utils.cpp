@@ -92,8 +92,8 @@ template<typename T, typename Time_unit>
 void generate_metrics_csv(bool console_output, int start)
 {
 	std::ofstream fout("../data/metrics.csv");
-	fout << "TestName,VertexCount,Runtime(" + time_type<Time_unit>() + "),PITC,UPD,AvgDegree" << std::endl;
-	for (size_t i = start; i < STRESS_TESTS; i+=50)
+	fout << "TestName,VertexCount,Runtime(" + time_type<Time_unit>() + "),PITC,PITC/VertexCount,UPD,AvgDegree," << std::endl;
+	for (size_t i = start; i < STRESS_TESTS; i++)
 	{
 		std::string name = std::to_string(i);
 		T simplifier("StressTests/" + name);
@@ -109,6 +109,7 @@ void generate_metrics_csv(bool console_output, int start)
 			 << metric.init_vertex_count << ","
 			 << metric.runtime.first << ","
 			 << metric.pitc << ","
+			 << metric.pitc_to_vertex_count_ratio << ","
 			 << metric.upd << ","
 			 << metric.avg_degree << ","
 			 << std::endl;
