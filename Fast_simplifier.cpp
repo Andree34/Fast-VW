@@ -286,9 +286,9 @@ template<typename T>
 inline K::FT Fast_simplifier<T>::get_area(Vertex_handle vh)
 {
 	Neighbours nb = get_neighbours(vh);
-	K::Point_2 p1 = vh->point();
-	K::Point_2 p2 = nb.first->point();
-	K::Point_2 p3 = nb.second->point();
+	Point p1 = vh->point();
+	Point p2 = nb.first->point();
+	Point p3 = nb.second->point();
 
 	return abs(K::Triangle_2(p1, p2, p3).area());
 }

@@ -5,7 +5,7 @@
 #include <CGAL/Constrained_Delaunay_triangulation_2.h>
 #include <string>
 
-typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
+typedef CGAL::Exact_predicates_exact_constructions_kernel K;
 typedef CGAL::No_constraint_intersection_tag                               Itag;
 typedef CGAL::Constrained_Delaunay_triangulation_2<K, CGAL::Default, Itag> CDT;
 typedef CGAL::Constrained_triangulation_2<K, CGAL::Default, Itag> CT;

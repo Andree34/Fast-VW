@@ -18,10 +18,10 @@ public:
 
 // runs all stress tests
 template<typename T = CDT>
-void run_stress_tests(std::vector<int> to_store, int count = STRESS_TESTS);
+void run_stress_tests(std::vector<int> to_store, int start = 0);
 
 template<typename T = CDT, typename Time_unit = std::chrono::milliseconds>
-void generate_metrics_csv(bool console_output = true, int count = STRESS_TESTS);
+void generate_metrics_csv(bool console_output = true, int start = 0);
 
 // returns the time type as a string
 template<typename T> 

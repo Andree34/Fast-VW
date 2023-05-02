@@ -93,8 +93,8 @@ public:
 	void simplify(int remaining_vertices = 3);
 
 private:
-	int point_in_triangle_checks = 0;
-	int unknown_point_detections = 0;
+	long long point_in_triangle_checks = 0;
+	long long unknown_point_detections = 0;
 	int init_vertex_count;
 
 	int total_degree = 0;

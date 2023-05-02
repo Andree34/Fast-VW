@@ -1,5 +1,6 @@
 #include "Utils.hpp"
 #include "Fast_simplifier.hpp"
+#include "Slow_simplifier.hpp"
 #include <chrono>
 #include <iomanip>
 #include <algorithm>
@@ -56,7 +57,7 @@ void IPE::polygon_to_IPE(std::string name, Polygon polygon, bool original)
 	assert(polygon.size() >= 3 && "Simplified polygon has less than 3 vertices.");
 
 	// bounds the polygon to [-bound, bound] on both axes
-	IPE::normalize_polygon(polygon, 5000);
+	IPE::normalize_polygon(polygon, 500);
 
 	std::string file_name = (original ? "original_" : "simplified_") + std::to_string(polygon.size());
 	std::ofstream fout("../data/" + name + "/" + file_name + ".ipe");
@@ -75,9 +76,9 @@ void IPE::polygon_to_IPE(std::string name, Polygon polygon, bool original)
 
 // PRE: count <= 5236
 template<typename T>
-void run_stress_tests(std::vector<int> to_store, int count)
+void run_stress_tests(std::vector<int> to_store, int start)
 {
-	for (size_t i = 0; i < count; i++)
+	for (size_t i = start; i < STRESS_TESTS; i++)
 	{
 		std::string name = std::to_string(i);
 		Fast_simplifier<T> simplifier("StressTests/" + name, false);
@@ -88,14 +89,14 @@ void run_stress_tests(std::vector<int> to_store, int count)
 }
 
 template<typename T, typename Time_unit>
-void generate_metrics_csv(bool console_output, int count)
+void generate_metrics_csv(bool console_output, int start)
 {
 	std::ofstream fout("../data/metrics.csv");
 	fout << "TestName,VertexCount,Runtime(" + time_type<Time_unit>() + "),PITC,UPD,AvgDegree" << std::endl;
-	for (size_t i = 0; i < count; i++)
+	for (size_t i = start; i < STRESS_TESTS; i+=50)
 	{
 		std::string name = std::to_string(i);
-		Fast_simplifier<T> simplifier("StressTests/" + name);
+		T simplifier("StressTests/" + name);
 
 		if (console_output)
 		{
@@ -120,18 +121,24 @@ void generate_metrics_csv(bool console_output, int count)
 template void run_stress_tests<CDT>(std::vector<int> to_store, int count);
 template void run_stress_tests<CT>(std::vector<int> to_store, int count);
 
-template void generate_metrics_csv<CDT, std::chrono::nanoseconds >(bool console_output, int count);
-template void generate_metrics_csv<CDT, std::chrono::microseconds>(bool console_output, int count);
-template void generate_metrics_csv<CDT, std::chrono::milliseconds>(bool console_output, int count);
-template void generate_metrics_csv<CDT, std::chrono::seconds     >(bool console_output, int count);
-template void generate_metrics_csv<CDT, std::chrono::minutes     >(bool console_output, int count);
-template void generate_metrics_csv<CDT, std::chrono::hours       >(bool console_output, int count);
-template void generate_metrics_csv<CT, std::chrono::nanoseconds  >(bool console_output, int count);
-template void generate_metrics_csv<CT, std::chrono::microseconds >(bool console_output, int count);
-template void generate_metrics_csv<CT, std::chrono::milliseconds >(bool console_output, int count);
-template void generate_metrics_csv<CT, std::chrono::seconds      >(bool console_output, int count);
-template void generate_metrics_csv<CT, std::chrono::minutes      >(bool console_output, int count);
-template void generate_metrics_csv<CT, std::chrono::hours        >(bool console_output, int count);
+template void generate_metrics_csv<Fast_simplifier<CDT>, std::chrono::nanoseconds >(bool console_output, int count);
+template void generate_metrics_csv<Fast_simplifier<CDT>, std::chrono::microseconds>(bool console_output, int count);
+template void generate_metrics_csv<Fast_simplifier<CDT>, std::chrono::milliseconds>(bool console_output, int count);
+template void generate_metrics_csv<Fast_simplifier<CDT>, std::chrono::seconds     >(bool console_output, int count);
+template void generate_metrics_csv<Fast_simplifier<CDT>, std::chrono::minutes     >(bool console_output, int count);
+template void generate_metrics_csv<Fast_simplifier<CDT>, std::chrono::hours       >(bool console_output, int count);
+template void generate_metrics_csv<Fast_simplifier<CT>, std::chrono::nanoseconds  >(bool console_output, int count);
+template void generate_metrics_csv<Fast_simplifier<CT>, std::chrono::microseconds >(bool console_output, int count);
+template void generate_metrics_csv<Fast_simplifier<CT>, std::chrono::milliseconds >(bool console_output, int count);
+template void generate_metrics_csv<Fast_simplifier<CT>, std::chrono::seconds      >(bool console_output, int count);
+template void generate_metrics_csv<Fast_simplifier<CT>, std::chrono::minutes      >(bool console_output, int count);
+template void generate_metrics_csv<Fast_simplifier<CT>, std::chrono::hours        >(bool console_output, int count);
+template void generate_metrics_csv<Slow_simplifier, std::chrono::nanoseconds	  >(bool console_output, int count);
+template void generate_metrics_csv<Slow_simplifier, std::chrono::microseconds     >(bool console_output, int count);
+template void generate_metrics_csv<Slow_simplifier, std::chrono::milliseconds     >(bool console_output, int count);
+template void generate_metrics_csv<Slow_simplifier, std::chrono::seconds          >(bool console_output, int count);
+template void generate_metrics_csv<Slow_simplifier, std::chrono::minutes          >(bool console_output, int count);
+template void generate_metrics_csv<Slow_simplifier, std::chrono::hours            >(bool console_output, int count);
 
 template<typename T> std::string time_type() { return "unknown"; }
 template<> std::string time_type<std::chrono::nanoseconds >() { return "nanoseconds"; }
