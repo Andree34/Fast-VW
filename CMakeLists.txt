@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.1...3.23)
 project(VW_Simplification)
 
 set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_CXX_STANDARD 17)
 
 find_package(CGAL REQUIRED)
 
