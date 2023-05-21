@@ -144,10 +144,10 @@ private:
 
 	// adds the given vertex from the map depending on whether it's blocked or not
 	void handle_vertex(Vertex_handle vh, std::map<std::pair<K::FT, int>, Vertex_handle>& ordered_triangles,
-		std::vector<std::vector<int>>& blocked, Map_iterator& it);
+		std::vector<std::set<int>>& blocked, Map_iterator& it);
 
 	// take out neighbours from the map, invalidate their index_to_SI entries, 
 	// and then call handle_vertex on them
-	void handle_neighbour(Vertex_handle vh, std::map<std::pair<K::FT, int>, Vertex_handle>& ordered_triangles,
-		std::vector<std::vector<int>>& blocked, Map_iterator& it);
+	void handle_neighbour(std::map<std::pair<K::FT, int>, Vertex_handle>& ordered_triangles,
+		Map_iterator& it);
 };

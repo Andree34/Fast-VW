@@ -109,7 +109,7 @@ void Fast_simplifier<T>::simplify(int remaining_vertices)
 	std::map<std::pair<K::FT, int>, Vertex_handle> ordered_triangles;
 
 	// blocked[i] contains the indices of all vertices that are blocked
-	std::vector<std::vector<int>> blocked(init_vertex_count);
+	std::vector<std::set<int>> blocked(init_vertex_count);
 
 	// keeps track of vertices that were removed (char is used since vector<bool> is bad practice)
 	std::vector<char> removed(init_vertex_count);
@@ -126,24 +126,6 @@ void Fast_simplifier<T>::simplify(int remaining_vertices)
 	int bound = (int)vertices.size() - remaining_vertices;
 	for (int i = 0; i < bound; i++)
 	{
-		/*std::cerr << "Iteration " << i << std::endl;
-		for (auto [comp, vh] : ordered_triangles)
-		{
-			std::cerr << comp.second << std::endl;
-		}*/
-
-		while (get_block(ordered_triangles.begin()->second) >= 0)
-		{
-			assert(ordered_triangles.size() >= 1);
-
-			Vertex_handle vh = ordered_triangles.begin()->second;
-			ordered_triangles.erase(ordered_triangles.begin());
-
-			int index = VH_to_id[vh];
-			index_to_SI[index] = ordered_triangles.end();
-			handle_vertex(vh, ordered_triangles, blocked, index_to_SI[index]);
-		}
-
 		assert(ordered_triangles.size() >= 1);
 
 		// get vertex handle of next vertex that is removed (smallest area non-blocked)
@@ -172,16 +154,18 @@ void Fast_simplifier<T>::simplify(int remaining_vertices)
 		// add back the constraint to close the shape
 		ct.insert_constraint(nb1, nb2);
 
-		// unblock vertices that were blocked by best_vertex
-		for (int to_unblock : blocked[index])
-			if (!removed[to_unblock])
-				handle_vertex(get_vi(to_unblock)->first, ordered_triangles, blocked, index_to_SI[to_unblock]);
-
 		// handle neighbour vertices
 		int index_nb1 = VH_to_id[nb1];
 		int index_nb2 = VH_to_id[nb2];
-		handle_neighbour(nb1, ordered_triangles, blocked, index_to_SI[index_nb1]);
-		handle_neighbour(nb2, ordered_triangles, blocked, index_to_SI[index_nb2]);
+		blocked[index].insert(index_nb1);
+		blocked[index].insert(index_nb2);
+		handle_neighbour(ordered_triangles, index_to_SI[index_nb1]);
+		handle_neighbour(ordered_triangles, index_to_SI[index_nb2]);
+
+		// unblock vertices that were blocked by best_vertex
+		for (int to_unblock : blocked[index])
+			if (!removed[to_unblock] && index_to_SI[to_unblock] == ordered_triangles.end())
+				handle_vertex(get_vi(to_unblock)->first, ordered_triangles, blocked, index_to_SI[to_unblock]);
 	}
 }
 
@@ -295,37 +279,30 @@ inline K::FT Fast_simplifier<T>::get_area(Vertex_handle vh)
 
 template<typename T>
 inline void Fast_simplifier<T>::handle_vertex(Vertex_handle vh, std::map<std::pair<K::FT, int>, Vertex_handle>& ordered_triangles,
-	std::vector<std::vector<int>>& blocked, Map_iterator& it)
+	std::vector<std::set<int>>& blocked, Map_iterator& it)
 {
 	int index = get_vi(vh)->second;
+
 	int block = get_block(vh);
 	if (block >= 0)
 	{
-		if (it == ordered_triangles.end())
-			blocked[block].push_back(index);
+		blocked[block].insert(index);
 		return;
 	}
-
-	if (it != ordered_triangles.end())
-		return;
 
 	it = ordered_triangles.insert(std::make_pair(std::make_pair(get_area(vh), index), vh)).first;
 }
 
 template<typename T>
-inline void Fast_simplifier<T>::handle_neighbour(Vertex_handle vh, std::map<std::pair<K::FT, int>, Vertex_handle>& ordered_triangles,
-	std::vector<std::vector<int>>& blocked, Map_iterator& it)
+inline void Fast_simplifier<T>::handle_neighbour(std::map<std::pair<K::FT, int>, Vertex_handle>& ordered_triangles,
+	Map_iterator& it)
 {
-	int index = VH_to_id[vh];
-
 	// take out the vertex from the map
 	if (it != ordered_triangles.end())
 	{
 		ordered_triangles.erase(it);
 		it = ordered_triangles.end();
 	}
-
-	handle_vertex(vh, ordered_triangles, blocked, it);
 }
 
 template class Fast_simplifier<CT>;
