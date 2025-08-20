@@ -3,37 +3,37 @@
 #include "Core.hpp"
 #include <cassert>
 #include <iostream>
-#include <fstream>
 #include <string>
 #include <vector>
 #include <map>
 #include <chrono>
-#include <iomanip>
+#include <list>
+#include <set>
+#include "Utils.hpp"
 
 class Slow_simplifier
 {
 public:
 	using Point = CGAL::Point_2<K>;
-	using Point_iterator = typename std::list<std::pair<Point, std::pair<int, int>>>::iterator;
-	using Map_iterator = typename std::map<std::pair<K::FT, int>, Point>::iterator;
 	using Timestamp = std::chrono::steady_clock::time_point;
 
 	// name of the folder where the data was taken from
 	std::string name;
 
-	// vector that contains the sequence of vertex IDs, 
+	// vector that contains the sequence of vertex IDs,
 	// in order of vertex removal given by the VW algorithm
 	std::vector<int> result;
 
 	/// <summary>
 	/// PRE: given folder contains a correctly formatted data.in file
 	/// POST: points and ct are initialised according to the given input
-	/// 
+	///
 	/// Instructions on how *.in and *.out files shall be formatted are provided in the data folder
 	/// </summary>
 	/// <param name="input_folder_name">the name of the input folder that can be found in the data folder</param>
 	/// <param name="gen_test">if true, result will be stored as expected output for given test</param>
-	Slow_simplifier(std::string input_folder_name, bool gen_test = false);
+	/// <param name="auto_simplify">if true, shape will be simplified to 3 vertices after constructor finishes executing</param>
+	Slow_simplifier(const std::string& input_folder_name, bool gen_test = false, bool auto_simplify = true);
 
 	// returns the number point in triangle checks
 	long long get_PITC() const;
@@ -66,17 +66,41 @@ private:
 	Timestamp start_time;
 	Timestamp end_time;
 
-	// points given in the input
-	std::list<std::pair<Point, std::pair<int, int>>> points;
+	// node list entry representing a single occurrence of a (possibly shared) vertex in a chain
+	struct NodeEntry {
+		Point p;                          // geometric point
+		std::pair<int, int> meta;         // meta.first = node index, meta.second = 'block' cursor used by handle_point
+		int chain_id = -1;                // which chain this node occurrence belongs to
+	};
 
-	// array of point iterators (in this->vertices)
+	// points given in the input
+	std::list<NodeEntry> points;
+
+	// array of point iterators (in this->points), indexed by node-index (occurrence index)
+	using Point_iterator = typename std::list<NodeEntry>::iterator;
 	std::vector<Point_iterator> PI;
 
-	// get point iterator in the vertex list from a vertex id
-	Point_iterator get_pi(int id) const;
+	// chain data: each chain is a list of node-indices (node indices are indices into the 'points' occurrences)
+	std::vector<std::vector<int>> chains;
 
-	// get neighbours of the point (on the current polygon)
-	std::pair<int, int> get_neighbours(int ind);
+	// map node-index -> position in its chain (so we can get prev/next quickly)
+	std::vector<int> chain_pos;
+
+	// chain closed flags
+	std::vector<char> chain_closed;
+
+	// occurrence bookkeeping for global vertex merging: maps global coordinate id -> list of node indices
+	// (global ids are only used to detect junction/shared vertices as we cannot remove those)
+	std::vector<int> node_to_global_vid;
+	std::map<std::pair<K::FT, K::FT>, int> global_coord_to_vid;
+	std::vector<int> global_vid_counts;
+
+	// get point iterator in the vertex list from a vertex id
+	[[nodiscard]] Point_iterator get_pi(int id) const;
+
+	// get neighbours of the point (on the current chain)
+	// returns pair(prev_node_index, next_node_index). If neighbour doesn't exist (open endpoint), returns -1 for that neighbour.
+	[[nodiscard]] std::pair<int, int> get_neighbours(int ind) const;
 
 	/// <summary>
 	/// PRE: (tr1, tr2, tr3) is given in CCW order
@@ -86,26 +110,31 @@ private:
 	/// <param name="tr2">second triangle point</param>
 	/// <param name="tr3">third triangle point</param>
 	/// <returns> true if p is in (tr1, tr2, tr3), or on the boundary, false otherwise</returns>
-	bool is_in_triangle(Point p, Point tr1, Point tr2, Point tr3) const;
+	[[nodiscard]] bool is_in_triangle(Point p, Point tr1, Point tr2, Point tr3) const;
 
-	// returns the area of the triangle corresponding to vh in the polygon
-	K::FT get_area(int ind);
+	// returns the area of the triangle corresponding to vh in the polygon/chain
+	[[nodiscard]] K::FT get_area(int ind);
 
 	void handle_point(Point_iterator& pi, std::map<std::pair<K::FT, int>, Point>& ordered_triangles,
-		std::vector<char> removed, Map_iterator& mi);
+		std::vector<char> removed, std::vector<std::map<std::pair<K::FT,int>, Point>::iterator>& unused, std::vector<std::map<std::pair<K::FT,int>, Point>::iterator>::iterator dummy_it);
 
-	void handle_neighbour(Point_iterator& pi, std::map<std::pair<K::FT, int>, Point>& ordered_triangles, Map_iterator& mi);
+	void handle_neighbour(Point_iterator& pi, std::map<std::pair<K::FT, int>, Point>& ordered_triangles, std::map<std::pair<K::FT, int>, Point>::iterator& mi);
 
 	/// <summary>
 	/// PRE: "remaining_vertices" <= vertices.size()
-	/// 
+	///
 	/// POST: Appends the VW index sequence computed by simplifying the shape down to the number of remaining verticies specified.
-	///		  Polygon is also simplified to the specified number of vertices.
-	/// 
+	///		  Chains are also simplified to the specified number of vertices where appropriate.
+	///
 	/// Note: It is considerably faster to call this function only once compared to multiple times.
 	/// </summary>
-	/// <param name="remaining_vertices">The number of remaining vertices in the resulting polygon</param>
+	/// <param name="remaining_vertices">The number of remaining vertices in the resulting polygon(s)</param>
 	void simplify(int remaining_vertices = 3);
 
 	void generate_test_output();
+
+	// helpers for PSLG parsing & bookkeeping
+	void parse_input_file_as_chains(const std::string& path);
+	void build_internal_structures_from_chains();
+	[[nodiscard]] bool is_node_candidate_removable(int node_index) const;
 };
