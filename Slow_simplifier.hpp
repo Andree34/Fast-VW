@@ -8,7 +8,6 @@
 #include <map>
 #include <chrono>
 #include <list>
-#include <set>
 #include "Utils.hpp"
 
 class Slow_simplifier
@@ -33,10 +32,10 @@ public:
 	/// <param name="input_folder_name">the name of the input folder that can be found in the data folder</param>
 	/// <param name="gen_test">if true, result will be stored as expected output for given test</param>
 	/// <param name="auto_simplify">if true, shape will be simplified to 3 vertices after constructor finishes executing</param>
-	Slow_simplifier(const std::string& input_folder_name, bool gen_test = false, bool auto_simplify = true);
+	explicit Slow_simplifier(const std::string& input_folder_name, bool gen_test = false, bool auto_simplify = true);
 
 	// returns the number point in triangle checks
-	long long get_PITC() const;
+	[[nodiscard]] long long get_PITC() const;
 
 	// returns the time it took to run the algorithm on the given input
 	// only works if shape was auto_simplified
@@ -77,7 +76,7 @@ private:
 	std::list<NodeEntry> points;
 
 	// array of point iterators (in this->points), indexed by node-index (occurrence index)
-	using Point_iterator = typename std::list<NodeEntry>::iterator;
+	using Point_iterator = std::list<NodeEntry>::iterator;
 	std::vector<Point_iterator> PI;
 
 	// chain data: each chain is a list of node-indices (node indices are indices into the 'points' occurrences)
@@ -96,7 +95,8 @@ private:
 	std::vector<int> global_vid_counts;
 
 	// get point iterator in the vertex list from a vertex id
-	[[nodiscard]] Point_iterator get_pi(int id) const;
+	[[nodiscard]] Point_iterator& get_pi(const int id) { return PI[id]; }
+	[[nodiscard]] const Point_iterator& get_pi(const int id) const { return PI[id]; }
 
 	// get neighbours of the point (on the current chain)
 	// returns pair(prev_node_index, next_node_index). If neighbour doesn't exist (open endpoint), returns -1 for that neighbour.
@@ -115,9 +115,27 @@ private:
 	// returns the area of the triangle corresponding to vh in the polygon/chain
 	[[nodiscard]] K::FT get_area(int ind);
 
-	void handle_point(Point_iterator& pi, std::map<std::pair<K::FT, int>, Point>& ordered_triangles,
-		std::vector<char> removed, std::vector<std::map<std::pair<K::FT,int>, Point>::iterator>& unused, std::vector<std::map<std::pair<K::FT,int>, Point>::iterator>::iterator dummy_it);
+	/// <summary>
+	/// PRE: 'pi' points to a valid NodeEntry (not removed).
+	///      'removed' marks which node indices are already removed.
+	///      'ordered_triangles' may or may not contain an entry for 'pi'.
+	/// POST: If 'pi' corresponds to a removable vertex and is not blocked by another point,
+	///       then an entry (area, node_index) -> point is inserted into 'ordered_triangles'.
+	///       Otherwise, 'pi' is left untouched.
+	/// </summary>
+	void handle_point(Point_iterator pi,
+	                  std::map<std::pair<K::FT, int>, Point>& ordered_triangles,
+	                  const std::vector<char>& removed,
+	                  std::map<std::pair<K::FT, int>, Point>::iterator& mi);
 
+	/// <summary>
+	/// PRE: 'pi' points to a valid NodeEntry (not removed).
+	///      'mi' is the iterator to the entry in 'ordered_triangles' corresponding to 'pi',
+	///      or 'ordered_triangles.end()' if not currently present.
+	/// POST: Removes 'pi' from 'ordered_triangles' if present.
+	///       Resets 'pi->meta.second' (block cursor) so the point will be re-evaluated later.
+	///       Sets 'mi = ordered_triangles.end()'.
+	/// </summary>
 	void handle_neighbour(Point_iterator& pi, std::map<std::pair<K::FT, int>, Point>& ordered_triangles, std::map<std::pair<K::FT, int>, Point>::iterator& mi);
 
 	/// <summary>
@@ -134,7 +152,13 @@ private:
 	void generate_test_output();
 
 	// helpers for PSLG parsing & bookkeeping
-	void parse_input_file_as_chains(const std::string& path);
-	void build_internal_structures_from_chains();
+	std::vector<std::vector<Point>> parse_input_file_as_chains(const std::string& path);
+	void build_internal_structures_from_chains(const std::vector<std::vector<Point>>& chains_points);
+
+	/// <summary>
+	/// PRE: node_index is a valid index into PI.
+	/// POST: Returns true if the node occurrence is a candidate for removal,
+	///       i.e. not a junction (global occurrence count == 2) and has both neighbours.
+	/// </summary>
 	[[nodiscard]] bool is_node_candidate_removable(int node_index) const;
 };

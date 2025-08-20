@@ -37,7 +37,8 @@ bool Test<T>::run_test(std::string test_name, bool verbose)
 		if (verbose)
 		{
 			std::cout << "Failed on test case: " << test_name << std::endl;
-			std::cout << "Resulting index count does not match test case" << std::endl;
+			std::cout << "Resulting index count does not match test case. Expected "
+			<< expected_indices.size() << " but got " << result.size() << "." << std::endl;
 		}
 		else std::cout << "Failed" << std::endl;
 		return false;
@@ -52,6 +53,22 @@ bool Test<T>::run_test(std::string test_name, bool verbose)
 				std::cout << "Mismatch on sequence index: " << i << " (0-based)" << std::endl;
 				std::cout << "Expected: " << expected_indices[i] << std::endl;
 				std::cout << "Received: " << result[i] << std::endl;
+
+				// Print both entire results
+				std::cout << std::endl;
+				std::cout << "Correct result:" << std::endl;
+				for (int i = 0; i < result.size(); i++)
+					std::cout << expected_indices[i] << " ";
+				std::cout << std::endl;
+
+				std ::cout << std::endl;
+
+				std::cout << "Calculated result:" << std::endl;
+				for (int i = 0; i < result.size(); i++)
+					std::cout << result[i] << " ";
+				std::cout << std::endl;
+
+
 			}
 			else std::cout << "Failed" << std::endl;
 			return false;
