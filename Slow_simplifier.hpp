@@ -94,6 +94,11 @@ private:
 	std::map<std::pair<K::FT, K::FT>, int> global_coord_to_vid;
 	std::vector<int> global_vid_counts;
 
+	// for junction detection
+	std::vector<int> global_vid_chain_count;
+	// builder helper to avoid counting a chain multiple times per gid
+	std::vector<int> global_vid_chain_last_seen;
+
 	// get point iterator in the vertex list from a vertex id
 	[[nodiscard]] Point_iterator& get_pi(const int id) { return PI[id]; }
 	[[nodiscard]] const Point_iterator& get_pi(const int id) const { return PI[id]; }
@@ -136,8 +141,7 @@ private:
 	///       Resets 'pi->meta.second' (block cursor) so the point will be re-evaluated later.
 	///       Sets 'mi = ordered_triangles.end()'.
 	/// </summary>
-	void handle_neighbour(Point_iterator& pi, std::map<std::pair<K::FT, int>, Point>& ordered_triangles, std::map<std::pair<K::FT, int>, Point>::iterator& mi);
-
+	void handle_neighbour(Point_iterator pi, std::map<std::pair<K::FT, int>, Point>& ordered_triangles, std::map<std::pair<K::FT, int>, Point>::iterator& mi);
 	/// <summary>
 	/// PRE: "remaining_vertices" <= vertices.size()
 	///
@@ -158,7 +162,7 @@ private:
 	/// <summary>
 	/// PRE: node_index is a valid index into PI.
 	/// POST: Returns true if the node occurrence is a candidate for removal,
-	///       i.e. not a junction (global occurrence count == 2) and has both neighbours.
+	///       i.e. not a junction (appears in exactly one distinct chain) and has both neighbours.
 	/// </summary>
 	[[nodiscard]] bool is_node_candidate_removable(int node_index) const;
 };

@@ -12,6 +12,7 @@ using std::make_pair;
 using std::to_string;
 using std::cout;
 using std::endl;
+using std::runtime_error; // TODO temporarily ???
 
 Slow_simplifier::Slow_simplifier(const std::string& input_folder_name, bool gen_test, bool auto_simplify) : name(
     input_folder_name)
@@ -136,8 +137,14 @@ void Slow_simplifier::build_internal_structures_from_chains(const std::vector<st
         }
         chain_closed.push_back(closed ? 1 : 0);
 
-        for (auto p : chain_pts)
+        // if chain is closed by repeating first point at end, skip final duplicate occurrence.
+        size_t limit = chain_pts.size();
+        if (closed && limit > 0) limit = limit - 1;
+
+        for (size_t pi_idx = 0; pi_idx < limit; ++pi_idx)
         {
+            auto p = chain_pts[pi_idx];
+
             // merge duplicates by coordinate
             pair<K::FT, K::FT> coord = {p.x(), p.y()};
             auto it = global_coord_to_vid.find(coord);
@@ -147,10 +154,26 @@ void Slow_simplifier::build_internal_structures_from_chains(const std::vector<st
                 gid = static_cast<int>(global_coord_to_vid.size());
                 global_coord_to_vid[coord] = gid;
                 global_vid_counts.push_back(0);
+                // ensure chain-count arrays grow in parallel if they exist
+                if (global_vid_chain_count.size() < global_coord_to_vid.size())
+                {
+                    global_vid_chain_count.push_back(0);
+                    global_vid_chain_last_seen.push_back(-1);
+                }
             }
             else
             {
                 gid = it->second;
+            }
+
+            // if the chain-count arrays exist, update them (count distinct chains)
+            if (!global_vid_chain_last_seen.empty())
+            {
+                if (global_vid_chain_last_seen[gid] != static_cast<int>(cid))
+                {
+                    global_vid_chain_count[gid] += 1;
+                    global_vid_chain_last_seen[gid] = static_cast<int>(cid);
+                }
             }
 
             // append node entry to points list
@@ -187,11 +210,38 @@ void Slow_simplifier::build_internal_structures_from_chains(const std::vector<st
 }
 
 
-
 // return (prev_node_index, next_node_index) in the same chain as node index
 std::pair<int, int> Slow_simplifier::get_neighbours(const int ind) const
 {
+    // TODO remove
+    {
+        if (ind < 0 || ind >= (int)PI.size())
+        {
+            throw runtime_error(
+                "get_neighbours: invalid node index: " + std::to_string(ind) + " (PI.size=" + std::to_string(PI.size())
+                +
+                ")");
+        }
+        if (chain_pos.size() != PI.size())
+        {
+            // defensive: chain_pos should align with PI
+            throw runtime_error(
+                "get_neighbours: chain_pos.size() mismatch (chain_pos.size=" + std::to_string(chain_pos.size()) +
+                ", PI.size=" + std::to_string(PI.size()) + ")");
+        }
+    }
+
+    // we avoid directly dereferencing PI[ind] here beyond reading chain_id; if the iterator is invalid this will still throw
     const int cid = PI[ind]->chain_id;
+    // TODO remove
+    {
+        if (cid < 0 || cid >= (int)chains.size())
+        {
+            throw runtime_error(
+                "get_neighbours: invalid chain id for node " + std::to_string(ind) + ": " + std::to_string(cid));
+        }
+    }
+
     const int pos = chain_pos[ind];
     const auto& chain_nodes = chains[cid];
 
@@ -240,6 +290,14 @@ bool Slow_simplifier::is_in_triangle(Point p, Point tr1, Point tr2, Point tr3) c
 
 K::FT Slow_simplifier::get_area(int ind)
 {
+    // TODO remove
+    {
+        if (ind < 0 || ind >= (int)PI.size())
+        {
+            throw runtime_error("Index for area invalid" + std::to_string(ind));
+        }
+    }
+
     auto [nb1, nb2] = get_neighbours(ind);
     if (nb1 == -1 || nb2 == -1)
         return K::FT(0); // endpoints / undefined triangle => area 0 (not removable)
@@ -255,8 +313,21 @@ void Slow_simplifier::handle_point(Point_iterator pi,
                                    const std::vector<char>& removed,
                                    std::map<std::pair<K::FT, int>, Point>::iterator& mi)
 {
+    // TODO remove
+    {
+        if (pi == points.end())
+        {
+            // Should never happen if caller only uses valid node indices
+            return;
+        }
+    }
+
     auto& node = *pi;
     int ind = node.meta.first;
+    // TODO remove
+    {
+        if (ind < 0 || ind >= (int)PI.size()) return;
+    }
     int& block = node.meta.second;
 
     auto [nb1, nb2] = get_neighbours(ind);
@@ -277,7 +348,22 @@ void Slow_simplifier::handle_point(Point_iterator pi,
         if (block == ind || block == nb1 || block == nb2)
             continue;
 
-        Point oth = get_pi(block)->p;
+        Point oth;
+        // TODO remove
+        {
+            // if the iterator for 'block' was invalid/dangling, this could throw: wrap in try-catch to convert to informative message
+            try
+            {
+                oth = get_pi(block)->p;
+            }
+            catch (const std::exception& e)
+            {
+                throw runtime_error(
+                    std::string("handle_point: get_pi(block) threw for block=") + std::to_string(block) + "; what(): " +
+                    e.
+                    what());
+            }
+        }
         ++point_in_triangle_checks;
         if (is_in_triangle(oth, pi->p, get_pi(nb1)->p, get_pi(nb2)->p))
             break;
@@ -292,22 +378,42 @@ void Slow_simplifier::handle_point(Point_iterator pi,
     }
 }
 
-void Slow_simplifier::handle_neighbour(Point_iterator& pi,
+void Slow_simplifier::handle_neighbour(Point_iterator pi,
                                        std::map<std::pair<K::FT, int>, Point>& ordered_triangles,
                                        std::map<std::pair<K::FT, int>, Point>::iterator& mi)
 {
+    // remove from map if present
     if (mi != ordered_triangles.end())
         ordered_triangles.erase(mi);
     mi = ordered_triangles.end();
+
+    // TODO: REMOVE
+    {
+        if (pi == points.end())
+        {
+            // odd: caller passed end() or iterator invalid; do not dereference
+            return;
+        }
+    }
     pi->meta.second = 0;
 }
 
 // helper to check whether a node occurrence is a candidate for removal:
-// must have exactly 2 neighbors
+// must have exactly 1 distinct chain (i.e. not a junction)
 bool Slow_simplifier::is_node_candidate_removable(int node_index) const
 {
+    if (node_index < 0 || node_index >= (int)node_to_global_vid.size())
+    {
+        // TODO: remove this potentially, should never be possible
+        throw runtime_error("Invalid candidate index");
+        return false;
+    }
     int gid = node_to_global_vid[node_index];
-    if (global_vid_counts[gid] != 2) return false; // junction or shared point
+
+    if (gid < 0 || gid >= (int)global_vid_chain_count.size()) return false;
+    if (global_vid_chain_count[gid] != 1) return false; // junction (multiple distinct chains) or isolated weirdness
+
+
     // must have both neighbours
     auto [nb1, nb2] = get_neighbours(node_index);
     if (nb1 == -1 || nb2 == -1) return false; // open endpoint
@@ -332,15 +438,47 @@ void Slow_simplifier::simplify(int remaining_vertices)
         it = ordered_triangles.end();
 
     // initialise ordered_triangles from initial triangulation: only candidate nodes (interior and not junctions)
-    for (int i = 0; i < init_vertex_count; ++i)
+    // TODO remove
     {
-        if (!is_node_candidate_removable(i))
-            continue;
+        cout << "DEBUG: initial candidate scan..." << endl;
+        for (int i = 0; i < init_vertex_count; ++i)
+        {
+            bool candidate = false;
+            try
+            {
+                candidate = is_node_candidate_removable(i);
+            }
+            catch (const std::exception& e)
+            {
+                throw runtime_error(
+                    std::string("simplify: is_node_candidate_removable threw for i=") + std::to_string(i) + "; what(): "
+                    + e
+                    .what());
+            }
 
-        auto pi = get_pi(i);
-        handle_point(pi, ordered_triangles, removed, index_to_MI[i]);
+            if (!candidate)
+            {
+                cout << "  node " << i << " not candidate" << endl;
+                continue;
+            }
+
+            auto pi = get_pi(i);
+
+            // TODO remove
+            {
+                // attempt to compute area for debug + detect possible iterator problems
+                K::FT area = get_area(i);
+                cout << "  node " << i << " candidate, area=" << CGAL::to_double(area) << endl;
+            }
+
+            handle_point(pi, ordered_triangles, removed, index_to_MI[i]);
+        }
     }
 
+    // TODO remove
+    {
+        cout << "DEBUG: ordered_triangles size after init = " << ordered_triangles.size() << endl;
+    }
     int bound = init_vertex_count - remaining_vertices;
     for (int it_count = 0; it_count < bound; it_count++)
     {
@@ -349,6 +487,15 @@ void Slow_simplifier::simplify(int remaining_vertices)
             // No more removable candidates (likely because remaining graph contains only endpoints/junctions or degenerate triangles).
             // We stop early (cannot remove more without breaking topology).
             break;
+        }
+
+        // TODO remove
+        {
+            // print smallest element
+            auto small_it = ordered_triangles.begin();
+            std::cerr << "DEBUG: smallest key area=" << std::setprecision(std::numeric_limits<double>::max_digits10) <<
+                CGAL::to_double(small_it->first.first)
+                << " idx=" << small_it->first.second << " (map size=" << ordered_triangles.size() << ")\n";
         }
 
         // get vertex handle of next vertex that is removed (smallest area non-blocked)
