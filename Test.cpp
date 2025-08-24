@@ -1,81 +1,87 @@
 #include "Test.hpp"
 
-template<typename T>
+template <typename T>
 void Test<T>::run_tests()
 {
-	std::cout << "Running tests..." << std::endl;
-	for (auto& name : test_names)
-	{
-		std::cout << "+-+-+-+-+-+-+-+-+-+-+-+" << std::endl;
-		bool result = run_test(name);
-		std::cout << "+-+-+-+-+-+-+-+-+-+-+-+" << std::endl;
-		std::cout << std::endl;
+    std::cout << "Running tests..." << std::endl;
+    for (auto& name : test_names)
+    {
+        std::cout << "+-+-+-+-+-+-+-+-+-+-+-+" << std::endl;
+        bool result = run_test(name);
+        std::cout << "+-+-+-+-+-+-+-+-+-+-+-+" << std::endl;
+        std::cout << std::endl;
 
-		if (!result)
-			return;
-	}
+        if (!result)
+            return;
+    }
 
-	std::cout << std::endl << "All tests passed!" << std::endl;
+    std::cout << std::endl << "All tests passed!" << std::endl;
 }
 
 //+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+//
 
-template<typename T>
+template <typename T>
+void Test<T>::printResults(std::vector<int> result, std::vector<int> expected_indices)
+{
+    // Print both entire results
+    std::cout << std::endl;
+    std::cout << "Correct result:" << std::endl;
+    for (int i = 0; i < expected_indices.size(); i++)
+        std::cout << expected_indices[i] << " ";
+    std::cout << std::endl;
+
+    std::cout << std::endl;
+
+    std::cout << "Calculated result:" << std::endl;
+    for (int i = 0; i < result.size(); i++)
+        std::cout << result[i] << " ";
+    std::cout << std::endl;
+}
+
+template <typename T>
 bool Test<T>::run_test(std::string test_name, bool verbose)
 {
-	std::cout << "Running test: " << test_name << std::endl;
+    std::cout << "Running test: " << test_name << std::endl;
 
-	std::vector<int> result = T(test_name).result;
-	std::ifstream in("../data/" + test_name + "/data.out");
-	std::istream_iterator<int> begin(in);
-	std::istream_iterator<int> end;
-	std::vector<int> expected_indices(begin, end);
+    std::vector<int> result = T(test_name).result;
+    std::ifstream in("../data/" + test_name + "/data.out");
+    std::istream_iterator<int> begin(in);
+    std::istream_iterator<int> end;
+    std::vector<int> expected_indices(begin, end);
 
-	// Test if index count produced by algo matches expected index count
-	if (result.size() != expected_indices.size())
-	{
-		if (verbose)
-		{
-			std::cout << "Failed on test case: " << test_name << std::endl;
-			std::cout << "Resulting index count does not match test case. Expected "
-			<< expected_indices.size() << " but got " << result.size() << "." << std::endl;
-		}
-		else std::cout << "Failed" << std::endl;
-		return false;
-	}
+    // Test if index count produced by algo matches expected index count
+    if (result.size() != expected_indices.size())
+    {
+        if (verbose)
+        {
+            std::cout << "Failed on test case: " << test_name << std::endl;
+            std::cout << "Resulting index count does not match test case. Expected "
+                << expected_indices.size() << " but got " << result.size() << "." << std::endl;
 
-	for (int i = 0; i < result.size(); i++)
-		if (result[i] != expected_indices[i])
-		{
-			if (verbose)
-			{
-				std::cout << "Failed on test case: " << test_name << std::endl;
-				std::cout << "Mismatch on sequence index: " << i << " (0-based)" << std::endl;
-				std::cout << "Expected: " << expected_indices[i] << std::endl;
-				std::cout << "Received: " << result[i] << std::endl;
+            printResults(result, expected_indices);
+        }
+        else std::cout << "Failed" << std::endl;
+        return false;
+    }
 
-				// Print both entire results
-				std::cout << std::endl;
-				std::cout << "Correct result:" << std::endl;
-				for (int i = 0; i < result.size(); i++)
-					std::cout << expected_indices[i] << " ";
-				std::cout << std::endl;
+    for (int i = 0; i < result.size(); i++)
+        if (result[i] != expected_indices[i])
+        {
+            if (verbose)
+            {
+                std::cout << "Failed on test case: " << test_name << std::endl;
+                std::cout << "Mismatch on sequence index: " << i << " (0-based)" << std::endl;
+                std::cout << "Expected: " << expected_indices[i] << std::endl;
+                std::cout << "Received: " << result[i] << std::endl;
 
-				std ::cout << std::endl;
+                printResults(result, expected_indices);
+            }
+            else std::cout << "Failed" << std::endl;
+            return false;
+        }
 
-				std::cout << "Calculated result:" << std::endl;
-				for (int i = 0; i < result.size(); i++)
-					std::cout << result[i] << " ";
-				std::cout << std::endl;
-
-
-			}
-			else std::cout << "Failed" << std::endl;
-			return false;
-		}
-
-	std::cout << "Passed" << std::endl;
-	return true;
+    std::cout << "Passed" << std::endl;
+    return true;
 }
 
 template class Test<Fast_simplifier<CDT>>;

@@ -35,6 +35,7 @@ public:
 
 	// run all tests
 	static void run_tests();
+	static void printResults(std::vector<int> result, std::vector<int> expected_indices);
 
 private:
 
