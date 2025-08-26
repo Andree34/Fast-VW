@@ -86,4 +86,5 @@ bool Test<T>::run_test(std::string test_name, bool verbose)
 
 template class Test<Fast_simplifier<CDT>>;
 template class Test<Fast_simplifier<CT>>;
+template class Test<Slow_simplifier_PSLG>;
 template class Test<Slow_simplifier>;

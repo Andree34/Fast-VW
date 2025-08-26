@@ -5,8 +5,9 @@
 #include <iostream>
 #include <fstream>
 
-#include "Fast_simplifier.hpp"
 #include "Slow_simplifier.hpp"
+#include "Fast_simplifier.hpp"
+#include "Slow_simplifier_PSLG.hpp"
 
 template<typename T = Fast_simplifier<>>
 class Test

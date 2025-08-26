@@ -1,6 +1,6 @@
 #include "Utils.hpp"
 #include "Fast_simplifier.hpp"
-#include "Slow_simplifier.hpp"
+#include "Slow_simplifier_PSLG.hpp"
 #include <chrono>
 #include <iomanip>
 #include <algorithm>
@@ -134,12 +134,12 @@ template void generate_metrics_csv<Fast_simplifier<CT>, std::chrono::millisecond
 template void generate_metrics_csv<Fast_simplifier<CT>, std::chrono::seconds      >(bool console_output, int count);
 template void generate_metrics_csv<Fast_simplifier<CT>, std::chrono::minutes      >(bool console_output, int count);
 template void generate_metrics_csv<Fast_simplifier<CT>, std::chrono::hours        >(bool console_output, int count);
-template void generate_metrics_csv<Slow_simplifier, std::chrono::nanoseconds	  >(bool console_output, int count);
-template void generate_metrics_csv<Slow_simplifier, std::chrono::microseconds     >(bool console_output, int count);
-template void generate_metrics_csv<Slow_simplifier, std::chrono::milliseconds     >(bool console_output, int count);
-template void generate_metrics_csv<Slow_simplifier, std::chrono::seconds          >(bool console_output, int count);
-template void generate_metrics_csv<Slow_simplifier, std::chrono::minutes          >(bool console_output, int count);
-template void generate_metrics_csv<Slow_simplifier, std::chrono::hours            >(bool console_output, int count);
+template void generate_metrics_csv<Slow_simplifier_PSLG, std::chrono::nanoseconds	  >(bool console_output, int count);
+template void generate_metrics_csv<Slow_simplifier_PSLG, std::chrono::microseconds     >(bool console_output, int count);
+template void generate_metrics_csv<Slow_simplifier_PSLG, std::chrono::milliseconds     >(bool console_output, int count);
+template void generate_metrics_csv<Slow_simplifier_PSLG, std::chrono::seconds          >(bool console_output, int count);
+template void generate_metrics_csv<Slow_simplifier_PSLG, std::chrono::minutes          >(bool console_output, int count);
+template void generate_metrics_csv<Slow_simplifier_PSLG, std::chrono::hours            >(bool console_output, int count);
 
 template<typename T> std::string time_type() { return "unknown"; }
 template<> std::string time_type<std::chrono::nanoseconds >() { return "nanoseconds"; }

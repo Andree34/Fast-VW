@@ -1,6 +1,6 @@
 #include "Core.hpp"
 #include "Fast_simplifier.hpp"
-#include "Slow_simplifier.hpp"
+#include "Slow_simplifier_PSLG.hpp"
 #include "Test.hpp"
 #include "Utils.hpp"
 

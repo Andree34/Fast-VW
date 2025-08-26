@@ -10,7 +10,7 @@ find_package(CGAL REQUIRED)
 set(HEADER_FILES
     Core.hpp
     Fast_simplifier.hpp
-    Slow_simplifier.hpp
+        Slow_simplifier_PSLG.hpp
     Test.hpp
     Utils.hpp
 )
@@ -18,10 +18,12 @@ set(HEADER_FILES
 set(SOURCE_FILES
     Core.cpp
     Fast_simplifier.cpp
-    Slow_simplifier.cpp
+        Slow_simplifier_PSLG.cpp
     Test.cpp
     Utils.cpp
     main.cpp
+        Slow_simplifier.cpp
+        Slow_simplifier.hpp
 )
 
 # Create executable target
