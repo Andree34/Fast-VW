@@ -5,26 +5,26 @@ Slow_simplifier::Slow_simplifier(std::string input_folder_name, bool gen_test) :
 	start_time = std::chrono::high_resolution_clock::now();
 	end_time = start_time;
 
-
 	std::ifstream in("../data/" + input_folder_name + "/data.in");
-	std::vector<Point> pts((std::istream_iterator<Point>(in)), std::istream_iterator<Point>());
-
-	// if the last and the first point are the same, drop it (we assume closed polygon already)
-	if (pts.size() > 1 && pts.front() == pts.back())
-		pts.pop_back();
+	std::istream_iterator<Point> begin(in);
+	std::istream_iterator<Point> end;
 
 	int index = 0;
-	for (const auto& p : pts)
+	for (auto p = begin; p != end; ++p, ++index)
 	{
 		// init vertices
-		points.push_back({ p, {index, 0} });
+		points.push_back({ *p, {index, 0} });
 
-		// init pi
+		// init vi
 		Point_iterator pi = points.end();
 		--pi;
 		PI.push_back(pi);
+	}
 
-		++index;
+	// if the last and the first point are the same, drop it (we assume closed polygon already)
+	if (points.size() > 1 && points.front().first == points.back().first) {
+		points.pop_back();
+		PI.pop_back();
 	}
 
 	// init CT
