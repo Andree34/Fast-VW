@@ -14,8 +14,9 @@ using std::cout;
 using std::endl;
 using std::runtime_error; // TODO temporarily ???
 
-Slow_simplifier_PSLG::Slow_simplifier_PSLG(const std::string& input_folder_name, bool gen_test, bool auto_simplify) : name(
-    input_folder_name)
+Slow_simplifier_PSLG::Slow_simplifier_PSLG(const std::string& input_folder_name, bool gen_test, bool auto_simplify) :
+    name(
+        input_folder_name)
 {
     start_time = std::chrono::high_resolution_clock::now();
     end_time = start_time;
@@ -89,9 +90,9 @@ Slow_simplifier_PSLG::parse_input_file_as_chains(const std::string& path)
             continue;
         }
 
-        istringstream iss(line);
-        std::vector<double> nums;
-        double v;
+        std::istringstream iss(line);
+        std::vector<K::FT> nums;
+        K::FT v;
         while (iss >> v) nums.push_back(v);
 
         if (nums.size() >= 2)
@@ -309,9 +310,9 @@ K::FT Slow_simplifier_PSLG::get_area(int ind)
 }
 
 void Slow_simplifier_PSLG::handle_point(Point_iterator pi,
-                                   std::map<std::pair<K::FT, int>, Point>& ordered_triangles,
-                                   const std::vector<char>& removed,
-                                   std::map<std::pair<K::FT, int>, Point>::iterator& mi)
+                                        std::map<std::pair<K::FT, int>, Point>& ordered_triangles,
+                                        const std::vector<char>& removed,
+                                        std::map<std::pair<K::FT, int>, Point>::iterator& mi)
 {
     // TODO remove
     {
@@ -379,8 +380,8 @@ void Slow_simplifier_PSLG::handle_point(Point_iterator pi,
 }
 
 void Slow_simplifier_PSLG::handle_neighbour(Point_iterator pi,
-                                       std::map<std::pair<K::FT, int>, Point>& ordered_triangles,
-                                       std::map<std::pair<K::FT, int>, Point>::iterator& mi)
+                                            std::map<std::pair<K::FT, int>, Point>& ordered_triangles,
+                                            std::map<std::pair<K::FT, int>, Point>::iterator& mi)
 {
     // remove from map if present
     if (mi != ordered_triangles.end())
@@ -440,7 +441,6 @@ void Slow_simplifier_PSLG::simplify(int remaining_vertices)
     // initialise ordered_triangles from initial triangulation: only candidate nodes (interior and not junctions)
     // TODO remove
     {
-        cout << "DEBUG: initial candidate scan..." << endl;
         for (int i = 0; i < init_vertex_count; ++i)
         {
             bool candidate = false;
@@ -468,7 +468,7 @@ void Slow_simplifier_PSLG::simplify(int remaining_vertices)
             {
                 // attempt to compute area for debug + detect possible iterator problems
                 K::FT area = get_area(i);
-                cout << "  node " << i << " candidate, area=" << CGAL::to_double(area) << endl;
+                // cout << "  node " << i << " candidate, area=" << CGAL::to_double(area) << endl;
             }
 
             handle_point(pi, ordered_triangles, removed, index_to_MI[i]);
@@ -487,15 +487,6 @@ void Slow_simplifier_PSLG::simplify(int remaining_vertices)
             // No more removable candidates (likely because remaining graph contains only endpoints/junctions or degenerate triangles).
             // We stop early (cannot remove more without breaking topology).
             break;
-        }
-
-        // TODO remove
-        {
-            // print smallest element
-            auto small_it = ordered_triangles.begin();
-            std::cerr << "DEBUG: smallest key area=" << std::setprecision(std::numeric_limits<double>::max_digits10) <<
-                CGAL::to_double(small_it->first.first)
-                << " idx=" << small_it->first.second << " (map size=" << ordered_triangles.size() << ")\n";
         }
 
         // get vertex handle of next vertex that is removed (smallest area non-blocked)

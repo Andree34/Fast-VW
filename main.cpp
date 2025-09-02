@@ -45,7 +45,8 @@ int main()
 
 	// Use exact constructions when testing
 	
-	Test<Slow_simplifier>::run_tests();
+	// Test<Slow_simplifier>::run_tests();
+	Test<Slow_simplifier_PSLG>::run_tests();
 	//std::cout << "Next batch:" << std::endl;
 	// Test<Fast_simplifier<CDT>>::run_tests();
 	// std::cout << "Next batch:" << std::endl;
