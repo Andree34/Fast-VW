@@ -52,6 +52,71 @@ void IPE::normalize_polygon(Polygon& polygon, double bound, double margin)
 	}
 }
 
+void IPE::normalize_chains(std::vector<Chain>& chains, double bound, double margin)
+{
+	// find global bounding box across all chains
+	double minx = std::numeric_limits<double>::infinity();
+	double miny = std::numeric_limits<double>::infinity();
+	double maxx = -std::numeric_limits<double>::infinity();
+	double maxy = -std::numeric_limits<double>::infinity();
+	bool any = false;
+
+	for (const auto &c : chains)
+	{
+		for (const auto &pt : c)
+		{
+			any = true;
+			minx = std::min(minx, pt.first);
+			miny = std::min(miny, pt.second);
+			maxx = std::max(maxx, pt.first);
+			maxy = std::max(maxy, pt.second);
+		}
+	}
+
+	if (!any) return; // nothing to normalize
+
+	// shift so min becomes zero (same idea as normalize_polygon)
+	for (auto &c : chains)
+	{
+		for (auto &pt : c)
+		{
+			pt.first -= minx;
+			pt.second -= miny;
+		}
+	}
+
+	// compute maximum absolute values after shift
+	double max_abs_x = 0.0;
+	double max_abs_y = 0.0;
+	for (const auto &c : chains)
+	{
+		for (const auto &pt : c)
+		{
+			max_abs_x = std::max(max_abs_x, std::abs(pt.first));
+			max_abs_y = std::max(max_abs_y, std::abs(pt.second));
+		}
+	}
+
+	double div_ratio = 1.0;
+	double maxdim = std::max(max_abs_x, max_abs_y);
+	if (maxdim > 0.0)
+		div_ratio = maxdim / bound;
+	else
+		div_ratio = 1.0;
+
+	// scale and add margin
+	for (auto &c : chains)
+	{
+		for (auto &pt : c)
+		{
+			pt.first /= div_ratio;
+			pt.second /= div_ratio;
+			pt.first += margin;
+			pt.second += margin;
+		}
+	}
+}
+
 void IPE::polygon_to_IPE(std::string name, Polygon polygon, bool original)
 {
 	assert(polygon.size() >= 3 && "Simplified polygon has less than 3 vertices.");
@@ -71,6 +136,49 @@ void IPE::polygon_to_IPE(std::string name, Polygon polygon, bool original)
 		fout << x << " " << y << " l  ";
 	}
 	fout << "h </path></page></ipe>";
+	fout.close();
+}
+
+void IPE::chains_to_IPE(std::string name, const std::vector<Chain>& chains_in, bool original)
+{
+	// collect non-empty chains and copy them so we can normalise
+	std::vector<Chain> chains;
+	chains.reserve(chains_in.size());
+	int total_points = 0;
+	for (const auto &c : chains_in)
+	{
+		if (c.empty()) continue;
+		chains.push_back(c);
+		total_points += static_cast<int>(c.size());
+	}
+
+	if (chains.empty()) return; // nothing to write
+
+	IPE::normalize_chains(chains);
+
+	// create output filename
+	std::string file_name = (original ? "original_chains_" : "simplified_chains_") + std::to_string(total_points);
+	std::ofstream fout("../data/" + name + "/" + file_name + ".ipe");
+
+	fout << "<?xml version='1.0' encoding='utf-8'?>" << std::endl;
+	fout << "<ipe version=\"70212\" creator=\"miniipe\"><ipestyle name=\"miniipe\" /><page><layer name=\"my_layer\" />";
+	fout << std::setprecision(4) << std::fixed;
+
+	// emit each chain as its own path element; do not fill (polylines)
+	for (const auto &tc : chains)
+	{
+		fout << "<path stroke=\"black\" layer=\"chain\">";
+		// move to first point
+		fout << tc[0].first << " " << tc[0].second << " m ";
+		// subsequent points as lines
+		for (size_t i = 1; i < tc.size(); ++i)
+		{
+			fout << tc[i].first << " " << tc[i].second << " l ";
+		}
+		fout << "</path>";
+	}
+
+	fout << "</page></ipe>";
 	fout.close();
 }
 

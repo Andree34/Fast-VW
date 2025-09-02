@@ -424,25 +424,36 @@ bool Slow_simplifier_PSLG::is_node_candidate_removable(int node_index) const
 
 void Slow_simplifier_PSLG::simplify(int remaining_vertices)
 {
-    std::cout << "SIMPLIFYING FROM " << init_vertex_count << " TO " << remaining_vertices << std::endl;
+    int vertices_left = init_vertex_count - (int)result.size();
+    std::cout << "SIMPLIFYING FROM " << vertices_left << " TO " << remaining_vertices << std::endl;
 
     // sorts triangles by area, and then by vertex index (in order to make the algo predictable)
-    // this also ensures unique keys, no multimap is not needed
+    // this also ensures unique keys
     std::map<std::pair<K::FT, int>, Point> ordered_triangles;
 
     // keeps track of vertices that were removed (char is used since vector<bool> is bad practice)
+    // seed the removed mask from 'result' so repeated simplify() calls are safe
     std::vector<char> removed(init_vertex_count);
+    if (!result.empty())
+    {
+        for (int idx : result)
+        {
+            if (idx >= 0 && idx < init_vertex_count)
+                removed[idx] = 1;
+        }
+    }
 
     // maps each vertex index to the corresponding iterator in the map
     std::vector<decltype(ordered_triangles.begin())> index_to_MI(init_vertex_count);
     for (auto& it : index_to_MI)
         it = ordered_triangles.end();
 
-    // initialise ordered_triangles from initial triangulation: only candidate nodes (interior and not junctions)
-    // TODO remove
+    // initialize candidate nodes (not junctions or endpoints)
     {
         for (int i = 0; i < init_vertex_count; ++i)
         {
+            if (removed[i]) continue; // skip previously removed nodes
+
             bool candidate = false;
             try
             {
@@ -452,8 +463,7 @@ void Slow_simplifier_PSLG::simplify(int remaining_vertices)
             {
                 throw runtime_error(
                     std::string("simplify: is_node_candidate_removable threw for i=") + std::to_string(i) + "; what(): "
-                    + e
-                    .what());
+                    + e.what());
             }
 
             if (!candidate)
@@ -463,29 +473,19 @@ void Slow_simplifier_PSLG::simplify(int remaining_vertices)
             }
 
             auto pi = get_pi(i);
-
-            // TODO remove
-            {
-                // attempt to compute area for debug + detect possible iterator problems
-                K::FT area = get_area(i);
-                // cout << "  node " << i << " candidate, area=" << CGAL::to_double(area) << endl;
-            }
-
             handle_point(pi, ordered_triangles, removed, index_to_MI[i]);
         }
     }
 
-    // TODO remove
-    {
-        cout << "DEBUG: ordered_triangles size after init = " << ordered_triangles.size() << endl;
-    }
+    cout << "DEBUG: ordered_triangles size after init = " << ordered_triangles.size() << endl;
+
     int bound = init_vertex_count - remaining_vertices;
     for (int it_count = 0; it_count < bound; it_count++)
     {
         if (ordered_triangles.empty())
         {
-            // No more removable candidates (likely because remaining graph contains only endpoints/junctions or degenerate triangles).
-            // We stop early (cannot remove more without breaking topology).
+            // no more removable candidates (likely because remaining graph contains only endpoints/junctions or degenerate triangles).
+            // we stop early (cannot remove more without breaking topology).
             break;
         }
 
@@ -523,7 +523,7 @@ void Slow_simplifier_PSLG::simplify(int remaining_vertices)
             chain_pos[vec[j]] = j;
         }
 
-        //  erase from points list
+        // erase from points list
         points.erase(get_pi(index));
         // mark removed and keep PI[index] as dangling (we won't use it again)
         removed[index] = 1;
@@ -547,9 +547,68 @@ void Slow_simplifier_PSLG::simplify(int remaining_vertices)
     }
 }
 
+
 void Slow_simplifier_PSLG::generate_test_output()
 {
     std::ofstream fout("../data/" + name + "/data.out");
     for (auto index : result)
         fout << index << std::endl;
+}
+
+void Slow_simplifier_PSLG::chain_to_ipe(bool original)
+{
+    // build ipe chains from current chains (skip empty chains)
+    std::vector<IPE::Chain> out_chains;
+    out_chains.reserve(chains.size());
+
+    for (size_t cid = 0; cid < chains.size(); ++cid)
+    {
+        const auto &chain_nodes = chains[cid];
+        if (chain_nodes.empty()) continue;
+
+        IPE::Chain chain;
+        chain.reserve(chain_nodes.size());
+
+        for (int node_idx : chain_nodes)
+        {
+            const Point &pp = get_pi(node_idx)->p;
+            chain.emplace_back(CGAL::to_double(pp.x()), CGAL::to_double(pp.y()));
+        }
+
+        out_chains.push_back(std::move(chain));
+    }
+
+    if (out_chains.empty()) return;
+
+    // write all chains into one ipe file
+    IPE::chains_to_IPE(name, out_chains, original);
+}
+
+
+// generate ipe output for multiple target sizes (descending), simplifying before each write
+void Slow_simplifier_PSLG::create_ipe_chains(std::vector<int> save_sizes)
+{
+    std::sort(save_sizes.begin(), save_sizes.end(), std::greater<int>());
+
+    for (int vertex_count : save_sizes)
+    {
+        // compute current remaining nodes (sum of chain lengths)
+        int current_remaining = 0;
+        for (const auto &ch : chains) current_remaining += static_cast<int>(ch.size());
+
+        if (vertex_count > current_remaining)
+            continue;
+
+        // simplify down to the requested total remaining count (across all chains)
+        if (vertex_count < current_remaining)
+            simplify(vertex_count);
+
+        // write all chains (in same file) to ipe
+        chain_to_ipe();
+    }
+}
+
+int Slow_simplifier_PSLG::get_initial_vertex_count() const
+{
+    return init_vertex_count;
 }

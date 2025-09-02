@@ -58,6 +58,12 @@ public:
 		std::cout << get_metrics<Time_unit>();
 	}
 
+	void chain_to_ipe(bool original = false);
+
+	void create_ipe_chains(std::vector<int> polygon_sizes);
+
+	[[nodiscard]] int get_initial_vertex_count() const;
+
 private:
 	long long point_in_triangle_checks = 0;
 	int init_vertex_count;

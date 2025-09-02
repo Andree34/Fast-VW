@@ -11,9 +11,12 @@ class IPE
 {
 public:
 	using Polygon = std::vector<std::pair<double, double>>;
+	using Chain = std::vector<std::pair<double, double>>; // not necessarily closed
 	static void process_file(std::string name);
 	static void normalize_polygon(Polygon& polygon, double bound = 500, double margin = 10);
+	static void IPE::normalize_chains(std::vector<Chain>& chains, double bound = 500, double margin = 10);
 	static void polygon_to_IPE(std::string name, Polygon polygon, bool original);
+	static void chains_to_IPE(std::string name, const std::vector<Chain>& chains, bool original = false);
 };
 
 // runs all stress tests

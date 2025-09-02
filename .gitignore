@@ -80,3 +80,7 @@ data/OldStressTests
 *.sln.docstates
 *.sln.ide-wal
 *.sln.ide-wal-int
+
+
+# Folder could contain copyrighted data so to be safe we do not add it here, only keep the converter from .ipe files
+data/IPE
