@@ -8,28 +8,78 @@ def extract_chains(filename):
     # only consider paths inside <page>, skip <symbol>
     for page in root.iter('page'):
         for path in page.iter('path'):
-            coords = []
+            if path.text is None:
+                continue
+
             tokens = path.text.strip().split()
+            chains = []
+            current = []
+            start_pt = None
+            numbuf = []  # holds numbers seen since last command
             i = 0
             while i < len(tokens):
                 tok = tokens[i]
 
-                # commands we know
-                if tok in ('m', 'l', 'h'):
+                if tok in ('m', 'l'):
+                    # expect the last two numbers in number buffer to be the coordinate
+                    if len(numbuf) >= 2:
+                        try:
+                            x = float(numbuf[-2])
+                            y = float(numbuf[-1])
+                        except ValueError:
+                            x = y = None
+                        # clear number buffer for next coord(s)
+                        numbuf.clear()
+
+                        if x is not None:
+                            if tok == 'm':
+                                # starting a new subpath; finalize any open one
+                                if current:
+                                    chains.append(current)
+                                current = [(x, y)]
+                                start_pt = (x, y)
+                            else:  # 'l'
+                                if not current:
+                                    # robustness: lineto without moveto -> start here
+                                    current = [(x, y)]
+                                    start_pt = (x, y)
+                                else:
+                                    current.append((x, y))
+                    else:
+                        # command without enough numbers; ignore and reset buffer
+                        numbuf.clear()
+                        print (f"Warning: '{tok}' command without enough coordinates in {filename}")
                     i += 1
                     continue
 
-                # try parsing coordinates
-                try:
-                    x = float(tok)
-                    y = float(tokens[i+1])
-                    coords.append((x, y))
-                    i += 2
-                except (ValueError, IndexError):
+                if tok == 'h':
+                    # close current subpath: append start point if not already equal
+                    if current:
+                        if start_pt is not None and current[-1] != start_pt:
+                            current.append(start_pt)
+                        chains.append(current)
+                        current = []
+                        start_pt = None
+                    numbuf.clear()
                     i += 1
+                    continue
 
-            if coords:
-                yield coords
+                # otherwise, try to parse as number token
+                try:
+                    float(tok)
+                    numbuf.append(tok)
+                except ValueError:
+                    # unknown token/command – discard any pending numbers to avoid mispairing
+                    numbuf.clear()
+                i += 1
+
+            if current:
+                chains.append(current)
+
+            # yield all collected chains for this <path>
+            for ch in chains:
+                if ch:
+                    yield ch
 
 def write_chains(chains, outname):
     with open(outname, "w") as f:
@@ -41,6 +91,7 @@ def write_chains(chains, outname):
 def main():
     folder = os.path.join(os.getcwd(), "data/IPE")
     for fname in os.listdir(folder):
+
         if fname.lower().endswith(".ipe"):
             inpath = os.path.join(folder, fname)
 
