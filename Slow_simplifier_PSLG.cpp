@@ -581,7 +581,7 @@ void Slow_simplifier_PSLG::chain_to_ipe(bool original)
     if (out_chains.empty()) return;
 
     // write all chains into one ipe file
-    IPE::chains_to_IPE(name, out_chains, original);
+    IPE::chains_to_IPE(name, out_chains, chain_closed, original);
 }
 
 

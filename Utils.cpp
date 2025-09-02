@@ -139,7 +139,7 @@ void IPE::polygon_to_IPE(std::string name, Polygon polygon, bool original)
 	fout.close();
 }
 
-void IPE::chains_to_IPE(std::string name, const std::vector<Chain>& chains_in, bool original)
+void IPE::chains_to_IPE(std::string name, const std::vector<Chain>& chains_in, std::vector<char> chain_closed, bool original)
 {
 	// collect non-empty chains and copy them so we can normalise
 	std::vector<Chain> chains;
@@ -175,6 +175,8 @@ void IPE::chains_to_IPE(std::string name, const std::vector<Chain>& chains_in, b
 		{
 			fout << tc[i].first << " " << tc[i].second << " l ";
 		}
+		if (chain_closed[&tc - &chains[0]])
+			fout << " h "; // close if requested
 		fout << "</path>";
 	}
 
