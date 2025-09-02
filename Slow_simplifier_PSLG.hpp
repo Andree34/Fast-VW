@@ -95,15 +95,12 @@ private:
 	std::vector<char> chain_closed;
 
 	// occurrence bookkeeping for global vertex merging: maps global coordinate id -> list of node indices
-	// (global ids are only used to detect junction/shared vertices as we cannot remove those)
 	std::vector<int> node_to_global_vid;
 	std::map<std::pair<K::FT, K::FT>, int> global_coord_to_vid;
-	std::vector<int> global_vid_counts;
 
-	// for junction detection
-	std::vector<int> global_vid_chain_count;
-	// builder helper to avoid counting a chain multiple times per gid
-	std::vector<int> global_vid_chain_last_seen;
+	// global neighbors of a vertex, mapped into using global vertex ids. These are not updated during simplification.
+	// used for junction detection
+	std::map<int, std::set<int>> global_vid_to_original_neighbors;
 
 	// get point iterator in the vertex list from a vertex id
 	[[nodiscard]] Point_iterator& get_pi(const int id) { return PI[id]; }

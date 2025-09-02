@@ -120,9 +120,9 @@ void Slow_simplifier_PSLG::build_internal_structures_from_chains(const std::vect
     PI.clear();
     node_to_global_vid.clear();
     global_coord_to_vid.clear();
-    global_vid_counts.clear();
     chain_pos.clear();
     chain_closed.clear();
+    global_vid_to_original_neighbors.clear();
 
     int node_index = 0;
     for (size_t cid = 0; cid < chains_points.size(); ++cid)
@@ -154,27 +154,10 @@ void Slow_simplifier_PSLG::build_internal_structures_from_chains(const std::vect
             {
                 gid = static_cast<int>(global_coord_to_vid.size());
                 global_coord_to_vid[coord] = gid;
-                global_vid_counts.push_back(0);
-                // ensure chain-count arrays grow in parallel if they exist
-                if (global_vid_chain_count.size() < global_coord_to_vid.size())
-                {
-                    global_vid_chain_count.push_back(0);
-                    global_vid_chain_last_seen.push_back(-1);
-                }
             }
             else
             {
                 gid = it->second;
-            }
-
-            // if the chain-count arrays exist, update them (count distinct chains)
-            if (!global_vid_chain_last_seen.empty())
-            {
-                if (global_vid_chain_last_seen[gid] != static_cast<int>(cid))
-                {
-                    global_vid_chain_count[gid] += 1;
-                    global_vid_chain_last_seen[gid] = static_cast<int>(cid);
-                }
             }
 
             // append node entry to points list
@@ -190,11 +173,37 @@ void Slow_simplifier_PSLG::build_internal_structures_from_chains(const std::vect
 
             // bookkeeping
             node_to_global_vid.push_back(gid);
-            global_vid_counts[gid] += 1;
             chains[cid].push_back(node_index);
             chain_pos.push_back(static_cast<int>(chains[cid].size()) - 1);
 
             ++node_index;
+        }
+    }
+
+    // build global neighbor sets for junction detection
+    for (size_t cid = 0; cid < chains.size(); ++cid)
+    {
+        const auto& chain_nodes = chains[cid];
+        const size_t chain_len = chain_nodes.size();
+        if (chain_len == 0) continue;
+
+        for (size_t i = 0; i < chain_len; ++i)
+        {
+            int node_i = chain_nodes[i];
+            int node_prev = (i == 0) ? (chain_closed[cid] ? chain_nodes.back() : -1) : chain_nodes[i - 1];
+            int node_next = (i == chain_len - 1) ? (chain_closed[cid] ? chain_nodes.front() : -1) : chain_nodes[i + 1];
+
+            int gid_i = node_to_global_vid[node_i];
+            if (node_prev != -1)
+            {
+                int gid_prev = node_to_global_vid[node_prev];
+                global_vid_to_original_neighbors[gid_i].insert(gid_prev);
+            }
+            if (node_next != -1)
+            {
+                int gid_next = node_to_global_vid[node_next];
+                global_vid_to_original_neighbors[gid_i].insert(gid_next);
+            }
         }
     }
 
@@ -204,7 +213,7 @@ void Slow_simplifier_PSLG::build_internal_structures_from_chains(const std::vect
     // - chains vector: per-chain node indices in order
     // - chain_pos mapping node_index -> position in its chain
     // - node_to_global_vid mapping node_index -> global coord id
-    // - global_vid_counts mapping global coord id -> number occurrences across all chains
+    // - global_vid_to_original_neighbors mapping global coord id -> set of neighboring global coord ids (not updated during simplification)
 
     // init some members used by simplify
     init_vertex_count = static_cast<int>(PI.size());
@@ -404,20 +413,16 @@ void Slow_simplifier_PSLG::handle_neighbour(Point_iterator pi,
 bool Slow_simplifier_PSLG::is_node_candidate_removable(int node_index) const
 {
     if (node_index < 0 || node_index >= (int)node_to_global_vid.size())
-    {
         // TODO: remove this potentially, should never be possible
         throw runtime_error("Invalid candidate index");
-        return false;
-    }
+
     int gid = node_to_global_vid[node_index];
 
-    if (gid < 0 || gid >= (int)global_vid_chain_count.size()) return false;
-    if (global_vid_chain_count[gid] != 1) return false; // junction (multiple distinct chains) or isolated weirdness
+    // junction/open end detection: candidates must have exactly 2 neighbors globally
+    auto it = global_vid_to_original_neighbors.find(gid);
+    if (it == global_vid_to_original_neighbors.end() || it->second.size() != 2)
+        return false;
 
-
-    // must have both neighbours
-    auto [nb1, nb2] = get_neighbours(node_index);
-    if (nb1 == -1 || nb2 == -1) return false; // open endpoint
     // otherwise candidate
     return true;
 }
@@ -528,12 +533,6 @@ void Slow_simplifier_PSLG::simplify(int remaining_vertices)
         // mark removed and keep PI[index] as dangling (we won't use it again)
         removed[index] = 1;
 
-        // keep global_vid_counts consistent so candidacy tests remain correct
-        {
-            int gid = node_to_global_vid[index];
-            if (gid >= 0 && gid < (int)global_vid_counts.size())
-                global_vid_counts[gid] -= 1;
-        }
 
         // unblock points: re-evaluate all nodes that were candidates but currently not in ordered_triangles
         for (int j = 0; j < init_vertex_count; j++)
