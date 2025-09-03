@@ -110,9 +110,6 @@ private:
 	// Maps global vertex id -> whether it was removed
 	std::vector<char> global_removed;
 
-	// block cursor per global vid (used when scanning other globals during blocking checks)
-	std::vector<int> global_block_cursor;
-
 	// get point iterator in the vertex list from a vertex id
 	[[nodiscard]] Point_iterator& get_pi(const int id) { return PI[id]; }
 	[[nodiscard]] const Point_iterator& get_pi(const int id) const { return PI[id]; }

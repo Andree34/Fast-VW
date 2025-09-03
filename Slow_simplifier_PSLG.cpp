@@ -229,10 +229,6 @@ void Slow_simplifier_PSLG::build_internal_structures_from_chains(const std::vect
         // set canonical point if not yet set (we can overwrite repeatedly, it's the same coordinate)
         gid_to_point[gid] = PI[node]->p;
     }
-
-    // block cursors per global id
-    global_block_cursor.clear();
-    global_block_cursor.resize(init_global_vertex_count, 0);
 }
 
 
@@ -304,27 +300,11 @@ bool Slow_simplifier_PSLG::is_in_triangle(Point p, Point tr1, Point tr2, Point t
     if (CGAL::collinear(tr1, tr2, tr3))
         return false;
 
-    // Check orientations
-    CGAL::Orientation o1 = CGAL::orientation(tr1, tr2, p);
-    CGAL::Orientation o2 = CGAL::orientation(tr2, tr3, p);
-    CGAL::Orientation o3 = CGAL::orientation(tr3, tr1, p);
+    CGAL::Orientation ori1 = CGAL::orientation(tr1, tr2, p);
+    CGAL::Orientation ori2 = CGAL::orientation(tr2, tr3, p);
+    CGAL::Orientation ori3 = CGAL::orientation(tr3, tr1, p);
 
-    // If all three orientations are the same (LEFT or RIGHT), p is strictly inside
-    if (o1 == o2 && o2 == o3 && o1 != CGAL::COLLINEAR)
-        return true;
-
-    // If collinear with an edge, check if it's actually between the vertices
-    if (o1 == CGAL::COLLINEAR &&
-        CGAL::collinear_are_ordered_along_line(tr1, p, tr2))
-        return true;
-    if (o2 == CGAL::COLLINEAR &&
-        CGAL::collinear_are_ordered_along_line(tr2, p, tr3))
-        return true;
-    if (o3 == CGAL::COLLINEAR &&
-        CGAL::collinear_are_ordered_along_line(tr3, p, tr1))
-        return true;
-
-    return false;
+    return !(ori1 == CGAL::RIGHT_TURN || ori2 == CGAL::RIGHT_TURN || ori3 == CGAL::RIGHT_TURN);
 }
 
 K::FT Slow_simplifier_PSLG::get_area(int ind)
@@ -382,11 +362,10 @@ void Slow_simplifier_PSLG::handle_point(
     }
 
     // scan for blocking vertices
-    int& block = global_block_cursor[gid];
     const int global_count = static_cast<int>(gid_to_point.size());
     bool blocked = false;
 
-    for (; block < global_count; ++block)
+    for (auto block = 0; block < global_count; ++block)
     {
         if (block == gid) continue;
         if (global_removed[block]) continue;
@@ -413,7 +392,7 @@ void Slow_simplifier_PSLG::handle_point(
 }
 
 
-// remove global id from ordered_triangles and reset its block cursor
+// remove global id from ordered_triangles
 void Slow_simplifier_PSLG::handle_neighbour_global(int gid, std::map<std::pair<K::FT, int>, Point>& ordered_triangles,
                                                    std::vector<std::map<std::pair<K::FT, int>, Point>::iterator>&
                                                    index_to_MI)
@@ -423,8 +402,6 @@ void Slow_simplifier_PSLG::handle_neighbour_global(int gid, std::map<std::pair<K
     if (mi != ordered_triangles.end())
         ordered_triangles.erase(mi);
     mi = ordered_triangles.end();
-    if (gid < (int)global_block_cursor.size())
-        global_block_cursor[gid] = 0;
 }
 
 // helper to check whether a node occurrence is a candidate for removal:
@@ -445,7 +422,6 @@ bool Slow_simplifier_PSLG::is_node_candidate_removable(int gid) const
         const int cid = PI[node_index]->chain_id;
         if (chain_closed[cid] && static_cast<int>(chains[cid].size()) <= 3)
         {
-            std::cout << "Not removing from closed chain of size 3" << std::endl;
             return false;
         }
 
@@ -647,9 +623,6 @@ void Slow_simplifier_PSLG::simplify(const int remaining_vertices)
                 if (nb2_node != -1) recomputed.insert(node_to_gid[nb2_node]);
             }
             gid_to_neighbors[neigh_gid] = std::move(recomputed);
-            // reset its block cursor so that future handle_point scanning restarts
-            if (neigh_gid < (int)global_block_cursor.size())
-                global_block_cursor[neigh_gid] = 0;
         }
 
         // reset its iterator slot for the removed gid
