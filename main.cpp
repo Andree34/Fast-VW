@@ -33,10 +33,12 @@ int main()
 
 	// Slow_simplifier_PSLG vw("BoundaryBlock", false, false);
 	// Slow_simplifier_PSLG vw("IPE/extracted-test", false, false);
-	Slow_simplifier_PSLG vw("IPE/gemeenten-2022_19282vtcs", false, false);
+	// Slow_simplifier_PSLG vw("IPE/gemeenten-2022_19282vtcs", false, false);
+	Slow_simplifier_PSLG vw("IPE/gemeenten-2022_1929vtcs", false, false);
+	// Slow_simplifier_PSLG vw("IPE/testing2", false, false);
 	auto init_vertex_count = vw.get_initial_vertex_count();
 	// do equispaced points of vertices for testing
-	std::vector<int> sizes = { init_vertex_count };
+	std::vector<int> sizes = { };
 	for (int i = 1; i <= 10; ++i)
 	{
 		sizes.emplace_back( init_vertex_count - i * init_vertex_count / 10 );

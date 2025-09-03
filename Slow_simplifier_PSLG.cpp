@@ -304,11 +304,27 @@ bool Slow_simplifier_PSLG::is_in_triangle(Point p, Point tr1, Point tr2, Point t
     if (CGAL::collinear(tr1, tr2, tr3))
         return false;
 
-    CGAL::Orientation ori1 = CGAL::orientation(tr1, tr2, p);
-    CGAL::Orientation ori2 = CGAL::orientation(tr2, tr3, p);
-    CGAL::Orientation ori3 = CGAL::orientation(tr3, tr1, p);
+    // Check orientations
+    CGAL::Orientation o1 = CGAL::orientation(tr1, tr2, p);
+    CGAL::Orientation o2 = CGAL::orientation(tr2, tr3, p);
+    CGAL::Orientation o3 = CGAL::orientation(tr3, tr1, p);
 
-    return !(ori1 == CGAL::RIGHT_TURN || ori2 == CGAL::RIGHT_TURN || ori3 == CGAL::RIGHT_TURN);
+    // If all three orientations are the same (LEFT or RIGHT), p is strictly inside
+    if (o1 == o2 && o2 == o3 && o1 != CGAL::COLLINEAR)
+        return true;
+
+    // If collinear with an edge, check if it's actually between the vertices
+    if (o1 == CGAL::COLLINEAR &&
+        CGAL::collinear_are_ordered_along_line(tr1, p, tr2))
+        return true;
+    if (o2 == CGAL::COLLINEAR &&
+        CGAL::collinear_are_ordered_along_line(tr2, p, tr3))
+        return true;
+    if (o3 == CGAL::COLLINEAR &&
+        CGAL::collinear_are_ordered_along_line(tr3, p, tr1))
+        return true;
+
+    return false;
 }
 
 K::FT Slow_simplifier_PSLG::get_area(int ind)
@@ -347,13 +363,14 @@ void Slow_simplifier_PSLG::handle_point(
         return;
 
     // get the two current neighbour gids (must exist because is_node_candidate_removable passed)
-    const auto &ngset = gid_to_neighbors.at(gid);
+    const auto& ngset = gid_to_neighbors.at(gid);
     auto sit = ngset.begin();
-    int gid_nb1 = *sit; ++sit;
+    int gid_nb1 = *sit;
+    ++sit;
     int gid_nb2 = *sit;
 
     // canonical coordinates
-    Point p  = gid_to_point[gid];
+    Point p = gid_to_point[gid];
     Point p1 = gid_to_point[gid_nb1];
     Point p2 = gid_to_point[gid_nb2];
 
@@ -396,14 +413,13 @@ void Slow_simplifier_PSLG::handle_point(
 }
 
 
-
-
-
 // remove global id from ordered_triangles and reset its block cursor
-void Slow_simplifier_PSLG::handle_neighbour_global(int gid, std::map<std::pair<K::FT, int>, Point>& ordered_triangles, std::vector<std::map<std::pair<K::FT, int>, Point>::iterator>& index_to_MI)
+void Slow_simplifier_PSLG::handle_neighbour_global(int gid, std::map<std::pair<K::FT, int>, Point>& ordered_triangles,
+                                                   std::vector<std::map<std::pair<K::FT, int>, Point>::iterator>&
+                                                   index_to_MI)
 {
     if (gid < 0 || gid >= (int)index_to_MI.size()) return;
-    auto &mi = index_to_MI[gid];
+    auto& mi = index_to_MI[gid];
     if (mi != ordered_triangles.end())
         ordered_triangles.erase(mi);
     mi = ordered_triangles.end();
@@ -423,6 +439,18 @@ bool Slow_simplifier_PSLG::is_node_candidate_removable(int gid) const
     if (it == gid_to_neighbors.end() || it->second.size() != 2)
         return false;
 
+    // disallow removing third-last node from chain is closed
+    for (int node_index : gid_to_nodes[gid])
+    {
+        const int cid = PI[node_index]->chain_id;
+        if (chain_closed[cid] && static_cast<int>(chains[cid].size()) <= 3)
+        {
+            std::cout << "Not removing from closed chain of size 3" << std::endl;
+            return false;
+        }
+
+    }
+
     // ensure none of its occurrences are endpoints (we require every occurrence has both neighbours)
     // This is only necessary if we carea bout preserving original chain endpoints
     // for (int node_index : gid_to_nodes[gid])
@@ -437,10 +465,15 @@ bool Slow_simplifier_PSLG::is_node_candidate_removable(int gid) const
 }
 
 
+unsigned long long Slow_simplifier_PSLG::get_vertices_left() const
+{
+    return init_global_vertex_count - result.size();
+}
+
 void Slow_simplifier_PSLG::simplify(const int remaining_vertices)
 {
     // compute how many vertices currently left as sum of chain sizes
-    auto vertices_left = init_global_vertex_count - result.size();
+    auto vertices_left = get_vertices_left();
     std::cout << "SIMPLIFYING FROM " << vertices_left << " TO " << remaining_vertices << std::endl;
     if (remaining_vertices >= vertices_left)
         return; // nothing to do
@@ -486,7 +519,7 @@ void Slow_simplifier_PSLG::simplify(const int remaining_vertices)
             int cid = PI[node_idx]->chain_id;
             int pos = chain_pos[node_idx];
             if (!(pos >= 0 && cid >= 0 && cid < (int)chains.size())) continue;
-            const auto &vec = chains[cid];
+            const auto& vec = chains[cid];
             if (!(pos < (int)vec.size() && vec[pos] == node_idx)) continue; // removed occurrence
             auto [nb1, nb2] = get_neighbours(node_idx);
             if (nb1 != -1) gid_to_neighbors[gid].insert(node_to_gid[nb1]);
@@ -509,9 +542,8 @@ void Slow_simplifier_PSLG::simplify(const int remaining_vertices)
         index_to_MI[gid] = mi;
     }
 
-    int current_remaining = 0;
-    for (const auto &ch : chains) current_remaining += static_cast<int>(ch.size());
-    int bound = current_remaining - remaining_vertices;
+    auto current_remaining = vertices_left;
+    auto bound = current_remaining - remaining_vertices;
     for (int it_count = 0; it_count < bound; it_count++)
     {
         if (ordered_triangles.empty())
@@ -551,7 +583,8 @@ void Slow_simplifier_PSLG::simplify(const int remaining_vertices)
         // remove all occurrences of this global vertex from chains and points list
         // TODO check if necessary
         auto occurrences = gid_to_nodes[gid]; // copy
-        std::sort(occurrences.begin(), occurrences.end(), [&](int a, int b) {
+        std::sort(occurrences.begin(), occurrences.end(), [&](int a, int b)
+        {
             int pa = (a >= 0 && a < (int)chain_pos.size()) ? chain_pos[a] : -1;
             int pb = (b >= 0 && b < (int)chain_pos.size()) ? chain_pos[b] : -1;
             if (pa != pb) return pa > pb;
@@ -639,7 +672,6 @@ void Slow_simplifier_PSLG::simplify(const int remaining_vertices)
 }
 
 
-
 void Slow_simplifier_PSLG::generate_test_output()
 {
     // TODO: might be bugged
@@ -656,7 +688,7 @@ void Slow_simplifier_PSLG::chain_to_ipe(bool original)
 
     for (size_t cid = 0; cid < chains.size(); ++cid)
     {
-        const auto &chain_nodes = chains[cid];
+        const auto& chain_nodes = chains[cid];
         if (chain_nodes.empty()) continue;
 
         IPE::Chain chain;
@@ -664,17 +696,21 @@ void Slow_simplifier_PSLG::chain_to_ipe(bool original)
 
         for (int node_idx : chain_nodes)
         {
-            const Point &pp = get_pi(node_idx)->p;
+            const Point& pp = get_pi(node_idx)->p;
             chain.emplace_back(CGAL::to_double(pp.x()), CGAL::to_double(pp.y()));
         }
 
         out_chains.push_back(std::move(chain));
     }
 
-    if (out_chains.empty()) return;
+    if (out_chains.empty())
+    {
+        std::cerr << "No IPE chains found" << std::endl;
+        return;
+    }
 
     // write all chains into one ipe file
-    IPE::chains_to_IPE(name, out_chains, chain_closed, original);
+    IPE::chains_to_IPE(name, out_chains, chain_closed, get_vertices_left(), original);
 }
 
 
@@ -683,11 +719,15 @@ void Slow_simplifier_PSLG::create_ipe_chains(std::vector<int> save_sizes)
 {
     std::sort(save_sizes.begin(), save_sizes.end(), std::greater<int>());
 
+    chain_to_ipe(true);
+    std::cout << "WROTE ORIGINAL" << std::endl;
+
+
     for (int vertex_count : save_sizes)
     {
-        // compute current remaining nodes (sum of chain lengths)
-        int current_remaining = 0;
-        for (const auto &ch : chains) current_remaining += static_cast<int>(ch.size());
+        int current_remaining = get_vertices_left();
+
+        std ::cout << "[debug] SIMPLIFY TO " << vertex_count << " (currently " << current_remaining << " left)" << std::endl;
 
         if (vertex_count > current_remaining)
             continue;

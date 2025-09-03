@@ -174,4 +174,5 @@ private:
 	///       i.e. not a junction (appears with exactly two distinct global neighbors) and none of its occurrences are endpoints.
 	/// </summary>
 	[[nodiscard]] bool is_node_candidate_removable(int gid) const;
+	unsigned long long Slow_simplifier_PSLG::get_vertices_left() const;
 };

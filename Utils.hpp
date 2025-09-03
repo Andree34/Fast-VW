@@ -17,7 +17,7 @@ public:
     static void IPE::normalize_chains(std::vector<Chain>& chains, double bound = 500, double margin = 10);
     static void polygon_to_IPE(std::string name, Polygon polygon, bool original);
     static void chains_to_IPE(std::string name, const std::vector<Chain>& chains, std::vector<char> chain_closed,
-                              bool original = false);
+                              int global_vertices_left, bool original = false );
 };
 
 // runs all stress tests

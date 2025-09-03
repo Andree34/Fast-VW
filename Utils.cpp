@@ -38,7 +38,7 @@ void IPE::normalize_polygon(Polygon& polygon, double bound, double margin)
 	// scale all coordinates to be in [-bound, bound] on both axes
 	double maxx = max_element(polygon.begin(), polygon.end(), [](Point p1, Point p2)
 		{return abs(p1.first) < abs(p2.first); })->first;
-	double maxy = max_element(polygon.begin(), polygon.end(), [](Point p1, Point p2) 
+	double maxy = max_element(polygon.begin(), polygon.end(), [](Point p1, Point p2)
 		{return abs(p1.second) < abs(p2.second); })->second;
 	double div_ratio = std::max(maxx, maxy) / bound;
 
@@ -139,25 +139,24 @@ void IPE::polygon_to_IPE(std::string name, Polygon polygon, bool original)
 	fout.close();
 }
 
-void IPE::chains_to_IPE(std::string name, const std::vector<Chain>& chains_in, std::vector<char> chain_closed, bool original)
+void IPE::chains_to_IPE(std::string name, const std::vector<Chain>& chains_in, std::vector<char> chain_closed, int global_vertices_left, bool original)
 {
 	// collect non-empty chains and copy them so we can normalise
 	std::vector<Chain> chains;
-	chains.reserve(chains_in.size());
-	int total_points = 0;
+	chains.reserve(chains_in.size());;
+
 	for (const auto &c : chains_in)
 	{
 		if (c.empty()) continue;
 		chains.push_back(c);
-		total_points += static_cast<int>(c.size());
 	}
 
 	if (chains.empty()) return; // nothing to write
 
-	IPE::normalize_chains(chains);
+	normalize_chains(chains);
 
 	// create output filename
-	std::string file_name = (original ? "original_chains_" : "simplified_chains_") + std::to_string(total_points);
+	std::string file_name = (original ? "original_chains_" : "simplified_chains_") + std::to_string( global_vertices_left );
 	std::ofstream fout("../data/" + name + "/" + file_name + ".ipe");
 
 	fout << "<?xml version='1.0' encoding='utf-8'?>" << std::endl;
@@ -213,7 +212,7 @@ void generate_metrics_csv(bool console_output, int start)
 			simplifier.print_all_metrics<Time_unit>();
 			std::cout << std::endl;
 		}
-		
+
 		Metric metric = simplifier.get_metrics<Time_unit>();
 		fout << metric.test_name << ","
 			 << metric.init_vertex_count << ","
