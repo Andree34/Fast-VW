@@ -27,9 +27,6 @@ Slow_simplifier_PSLG::Slow_simplifier_PSLG(const std::string& input_folder_name,
     // build internal node list, merge duplicate coordinates and create per-node structures
     build_internal_structures_from_chains(chains_points);
 
-    // initial vertex count is number of node occurrences
-    init_vertex_count = static_cast<int>(PI.size());
-
     // run simplification if auto
     if (auto_simplify)
     {
@@ -123,7 +120,7 @@ void Slow_simplifier_PSLG::build_internal_structures_from_chains(const std::vect
     global_coord_to_vid.clear();
     chain_pos.clear();
     chain_closed.clear();
-    gid_to_original_neighbors.clear();
+    gid_to_neighbors.clear();
 
     int node_index = 0;
     for (size_t cid = 0; cid < chains_points.size(); ++cid)
@@ -179,7 +176,7 @@ void Slow_simplifier_PSLG::build_internal_structures_from_chains(const std::vect
         }
     }
 
-    // build global neighbor sets for junction detection
+    // build global neighbor sets for junction detection (initial state)
     for (size_t cid = 0; cid < chains.size(); ++cid)
     {
         const auto& chain_nodes = chains[cid];
@@ -196,12 +193,12 @@ void Slow_simplifier_PSLG::build_internal_structures_from_chains(const std::vect
             if (node_prev != -1)
             {
                 int gid_prev = node_to_gid[node_prev];
-                gid_to_original_neighbors[gid_i].insert(gid_prev);
+                gid_to_neighbors[gid_i].insert(gid_prev);
             }
             if (node_next != -1)
             {
                 int gid_next = node_to_gid[node_next];
-                gid_to_original_neighbors[gid_i].insert(gid_next);
+                gid_to_neighbors[gid_i].insert(gid_next);
             }
         }
     }
@@ -214,17 +211,16 @@ void Slow_simplifier_PSLG::build_internal_structures_from_chains(const std::vect
     // - node_to_global_vid mapping node_index -> global coord id
     // - global_vid_to_original_neighbors mapping global coord id -> set of neighboring global coord ids (not updated during simplification)
 
-    // init some members used by simplify
-    init_vertex_count = static_cast<int>(PI.size());
+    init_global_vertex_count = static_cast<int>(global_coord_to_vid.size());
 
     // setup removed vector for global vertices
-    global_removed.resize(global_coord_to_vid.size());
+    global_removed.resize(init_global_vertex_count);
 
     // build reverse mapping global_vid -> occurrences and canonical point per global vid
     gid_to_nodes.clear();
-    gid_to_nodes.resize(global_coord_to_vid.size());
+    gid_to_nodes.resize(init_global_vertex_count);
     gid_to_point.clear();
-    gid_to_point.resize(global_coord_to_vid.size());
+    gid_to_point.resize(init_global_vertex_count);
 
     for (int node = 0; node < (int)node_to_gid.size(); ++node)
     {
@@ -236,40 +232,37 @@ void Slow_simplifier_PSLG::build_internal_structures_from_chains(const std::vect
 
     // block cursors per global id
     global_block_cursor.clear();
-    global_block_cursor.resize(global_coord_to_vid.size(), 0);
+    global_block_cursor.resize(init_global_vertex_count, 0);
 }
 
 
 // return (prev_node_index, next_node_index) in the same chain as node index
 std::pair<int, int> Slow_simplifier_PSLG::get_neighbours(const int ind) const
 {
-    // TODO remove
+    // defensive checks
+    if (ind < 0 || ind >= (int)PI.size())
     {
-        if (ind < 0 || ind >= (int)PI.size())
-        {
-            throw runtime_error(
-                "get_neighbours: invalid node index: " + std::to_string(ind) + " (PI.size=" + std::to_string(PI.size())
-                +
-                ")");
-        }
-        if (chain_pos.size() != PI.size())
-        {
-            // defensive: chain_pos should align with PI
-            throw runtime_error(
-                "get_neighbours: chain_pos.size() mismatch (chain_pos.size=" + std::to_string(chain_pos.size()) +
-                ", PI.size=" + std::to_string(PI.size()) + ")");
-        }
+        throw runtime_error(
+            "get_neighbours: invalid node index: " + std::to_string(ind) + " (PI.size=" + std::to_string(PI.size())
+            +
+            ")");
+    }
+    if (chain_pos.size() != PI.size())
+    {
+        throw runtime_error(
+            "get_neighbours: chain_pos.size() mismatch (chain_pos.size=" + std::to_string(chain_pos.size()) +
+            ", PI.size=" + std::to_string(PI.size()) + ")");
     }
 
-    // we avoid directly dereferencing PI[ind] here beyond reading chain_id; if the iterator is invalid this will still throw
+    // if this occurrence was erased, PI[ind] will be points.end()
+    if (PI[ind] == points.end())
+        return {-1, -1};
+
     const int cid = PI[ind]->chain_id;
-    // TODO remove
+    if (cid < 0 || cid >= (int)chains.size())
     {
-        if (cid < 0 || cid >= (int)chains.size())
-        {
-            throw runtime_error(
-                "get_neighbours: invalid chain id for node " + std::to_string(ind) + ": " + std::to_string(cid));
-        }
+        throw runtime_error(
+            "get_neighbours: invalid chain id for node " + std::to_string(ind) + ": " + std::to_string(cid));
     }
 
     const int pos = chain_pos[ind];
@@ -315,10 +308,6 @@ bool Slow_simplifier_PSLG::is_in_triangle(Point p, Point tr1, Point tr2, Point t
     CGAL::Orientation ori2 = CGAL::orientation(tr2, tr3, p);
     CGAL::Orientation ori3 = CGAL::orientation(tr3, tr1, p);
 
-
-    // print all oris
-    std::cout << "ORIS: " << ori1 << " " << ori2 << " " << ori3 << std::endl;
-
     return !(ori1 == CGAL::RIGHT_TURN || ori2 == CGAL::RIGHT_TURN || ori3 == CGAL::RIGHT_TURN);
 }
 
@@ -342,145 +331,71 @@ K::FT Slow_simplifier_PSLG::get_area(int ind)
     return abs(K::Triangle_2(p1, p2, p3).area());
 }
 
-void Slow_simplifier_PSLG::handle_point(int gid,
-                                        std::map<std::pair<K::FT, int>, Point>& ordered_triangles,
-                                        std::map<std::pair<K::FT, int>, Point>::iterator& mi)
+void Slow_simplifier_PSLG::handle_point(
+    int gid,
+    std::map<std::pair<K::FT, int>, Point>& ordered_triangles,
+    std::map<std::pair<K::FT, int>, Point>::iterator& mi)
 {
-    // TODO remove
-    {
-        if (gid < 0 || gid >= (int)gid_to_point.size())
-        {
-            throw runtime_error(
-                "handle_point: invalid gid: " + std::to_string(gid) + " (gid_to_point.size=" +
-                std::to_string(gid_to_point.size()) + ")");
-        }
-    }
+    if (gid < 0 || gid >= (int)gid_to_point.size())
+        throw runtime_error("handle_point: invalid gid");
 
-    // TODO: remove
-    {
-        if (global_removed[gid])
-        {
-            throw runtime_error("handle_point: gid " + std::to_string(gid) + " already removed");
-        }
-    }
-
-    // check candidate properties: not a junction and none of its occurrences are endpoints
-    if (!is_node_candidate_removable(gid))
-    {
-        // TODO: remove cout, maybe remove this part altogether since I think we only call this when it is valid
-        std::cout << "NOT REMOVAL IN HANDLE_POINT: " << gid << std::endl;
+    if (global_removed[gid])
         return;
+
+    // quick candidate check (uses current neighbours)
+    if (!is_node_candidate_removable(gid))
+        return;
+
+    // get the two current neighbour gids (must exist because is_node_candidate_removable passed)
+    const auto &ngset = gid_to_neighbors.at(gid);
+    auto sit = ngset.begin();
+    int gid_nb1 = *sit; ++sit;
+    int gid_nb2 = *sit;
+
+    // canonical coordinates
+    Point p  = gid_to_point[gid];
+    Point p1 = gid_to_point[gid_nb1];
+    Point p2 = gid_to_point[gid_nb2];
+
+    // ensure CCW (triangle order must be CCW)
+    if (CGAL::orientation(p, p1, p2) != CGAL::LEFT_TURN)
+    {
+        std::swap(p1, p2);
+        std::swap(gid_nb1, gid_nb2);
     }
 
-
-    // For each occurrence compute triangle and check blocking. We accept the candidate if at least one occurrence
-    // yields a valid (non-endpoint) triangle and is not blocked by any other global vertex.
-    K::FT best_area = K::FT(0);
-    bool any_ok = false;
-
+    // scan for blocking vertices
+    int& block = global_block_cursor[gid];
     const int global_count = static_cast<int>(gid_to_point.size());
+    bool blocked = false;
 
-    for (int node_index : gid_to_nodes[gid])
-    //    TODO: rework
+    for (; block < global_count; ++block)
     {
-        // ensure occurrence still present (PI[node_index] might be dangling if removed previously)
-        // attempt to detect removal by checking chain_pos validity: if chain_id invalid or pos out-of-range skip
-        if (node_index < 0 || node_index >= (int)PI.size()) continue;
-        try
+        if (block == gid) continue;
+        if (global_removed[block]) continue;
+        if (block == gid_nb1 || block == gid_nb2) continue;
+
+        Point oth = gid_to_point[block];
+        ++point_in_triangle_checks;
+
+        if (is_in_triangle(oth, p, p1, p2))
         {
-            auto & [p, chain_id] = *PI[node_index]; // may throw if iterator invalid
-
-            // get occurrence-level neighbors (these are node indices)
-            auto [nb1, nb2] = get_neighbours(node_index);
-
-            // global neighbor ids (for comparing to 'block')
-            int gid_nb1 = -1, gid_nb2 = -1;
-            // neighbor Points (for triangle tests)
-            Point pnb1, pnb2;
-
-            // try to use occurrence neighbors first (both must exist)
-            if (nb1 != -1 && nb2 != -1 && nb1 >= 0 &&
-                nb1 < static_cast<int>(PI.size()) && nb2 >= 0 && nb2 < static_cast<int>(PI.size()))
-            {
-                gid_nb1 = node_to_gid[nb1];
-                gid_nb2 = node_to_gid[nb2];
-                pnb1 = get_pi(nb1)->p;
-                pnb2 = get_pi(nb2)->p;
-            }
-            else
-            {
-                // fallback to global neighbors (from the set). Must be exactly two to be usable.
-                auto it = gid_to_original_neighbors.find(gid);
-                if (it == gid_to_original_neighbors.end() || it->second.size() != 2)
-                    continue; // cannot reconstruct -> skip this occurrence
-
-                auto sit = it->second.begin();
-                gid_nb1 = *sit;
-                ++sit;
-                gid_nb2 = *sit;
-
-                // use canonical points for those global neighbors
-                pnb1 = gid_to_point[gid_nb1];
-                pnb2 = gid_to_point[gid_nb2];
-            }
-
-            // ensure CCW: if not, swap both the points and the corresponding global ids
-            if (CGAL::orientation(p, pnb1, pnb2) != CGAL::LEFT_TURN)
-            {
-                std::swap(pnb1, pnb2);
-                std::swap(gid_nb1, gid_nb2);
-            }
-
-            // scan other global vertices (cursor stored in global_block_cursor[gid])
-            int &block = global_block_cursor[gid];
-            bool blocked = false;
-            for (; block < global_count; ++block)
-            {
-                if (block == gid) continue;
-                if (global_removed[block]) continue;
-
-                // skip the immediate global neighbors (compare against gids)
-                if (block == gid_nb1 || block == gid_nb2) continue;
-
-                Point oth = gid_to_point[block];
-                ++point_in_triangle_checks;
-
-                if (is_in_triangle(oth, p, pnb1, pnb2))
-                {
-                    blocked = true;
-                    ++block; // next time start after this blocking global
-                    std::cout << "BLOCKED: " << gid << " by " << block - 1
-                              << " with triangle (" << p << ", " << pnb1 << ", " << pnb2 << ")"
-                              << " oth=" << oth << std::endl;
-                    break;
-                }
-            }
-
-            if (!blocked)
-            {
-                // compute area for this occurrence
-                K::FT area = abs(K::Triangle_2(p, pnb1, pnb2).area());
-                if (!any_ok || area < best_area)
-                    best_area = area;
-                any_ok = true;
-            }
-        }
-        catch (const std::exception &e)
-        {
-            // occurrence iterator invalid/dangling -> skip this occurrence
-            std ::cout << "handle_point: skipping occurrence " << node_index << " of gid " << gid
-                      << " due to exception: " << e.what() << std::endl;
-            continue;
+            blocked = true;
+            ++block;
+            break;
         }
     }
 
-    if (any_ok)
+    if (!blocked)
     {
-        auto key = std::make_pair(best_area, gid);
-        auto itpair = ordered_triangles.insert(std::make_pair(key, gid_to_point[gid]));
+        K::FT area = abs(K::Triangle_2(p, p1, p2).area());
+        auto key = std::make_pair(area, gid);
+        auto itpair = ordered_triangles.insert({key, p});
         mi = itpair.first;
     }
 }
+
+
 
 
 
@@ -492,7 +407,7 @@ void Slow_simplifier_PSLG::handle_neighbour_global(int gid, std::map<std::pair<K
     if (mi != ordered_triangles.end())
         ordered_triangles.erase(mi);
     mi = ordered_triangles.end();
-    if (gid >= 0 && gid < (int)global_block_cursor.size())
+    if (gid < (int)global_block_cursor.size())
         global_block_cursor[gid] = 0;
 }
 
@@ -500,12 +415,12 @@ void Slow_simplifier_PSLG::handle_neighbour_global(int gid, std::map<std::pair<K
 // must have exactly 1 distinct chain (i.e. not a junction)
 bool Slow_simplifier_PSLG::is_node_candidate_removable(int gid) const
 {
-    if (gid < 0 || gid >= (int)gid_to_point.size())
+    if (gid >= (int)gid_to_point.size())
         throw runtime_error("Invalid candidate gid");
 
     // junction/open end detection: candidates must have exactly 2 neighbors globally
-    auto it = gid_to_original_neighbors.find(gid);
-    if (it == gid_to_original_neighbors.end() || it->second.size() != 2)
+    auto it = gid_to_neighbors.find(gid);
+    if (it == gid_to_neighbors.end() || it->second.size() != 2)
         return false;
 
     // ensure none of its occurrences are endpoints (we require every occurrence has both neighbours)
@@ -521,13 +436,14 @@ bool Slow_simplifier_PSLG::is_node_candidate_removable(int gid) const
     return true;
 }
 
-void Slow_simplifier_PSLG::simplify(int remaining_vertices)
+
+void Slow_simplifier_PSLG::simplify(const int remaining_vertices)
 {
     // compute how many vertices currently left as sum of chain sizes
-    int vertices_left = 0;
-    for (const auto &ch : chains) vertices_left += static_cast<int>(ch.size());
-    // Note: previously printed init-based count; preserve similar message but use current remaining
+    auto vertices_left = init_global_vertex_count - result.size();
     std::cout << "SIMPLIFYING FROM " << vertices_left << " TO " << remaining_vertices << std::endl;
+    if (remaining_vertices >= vertices_left)
+        return; // nothing to do
 
     // sorts triangles by area, and then by vertex index (in order to make the algo predictable)
     // this also ensures unique keys
@@ -537,12 +453,18 @@ void Slow_simplifier_PSLG::simplify(int remaining_vertices)
     // seed the removed mask from 'result' so repeated simplify() calls are safe
     if (!result.empty())
     {
-        for (int idx : result)
+        // result historically *may* contain node-indices (legacy) or (now) global ids.
+        // Prefer interpreting entries as global ids if they fit in that range.
+        for (int v : result)
         {
-            if (idx >= 0 && idx < init_vertex_count)
+            if (v >= 0 && v < (int)global_removed.size())
             {
-                int gid = node_to_gid[idx];
-                global_removed[gid] = 1;
+                // v is a gid
+                global_removed[v] = 1;
+            }
+            else
+            {
+                throw runtime_error("Out of range node index in result: " + std::to_string(v));
             }
         }
     }
@@ -553,26 +475,32 @@ void Slow_simplifier_PSLG::simplify(int remaining_vertices)
     for (auto& it : index_to_MI)
         it = ordered_triangles.end();
 
-    // initialize candidate global vertices (not junctions or endpoints)
+    // initialize member gid_to_neighbors from current chains/occurrences
+    gid_to_neighbors.clear();
+    for (int gid = 0; gid < global_count; ++gid)
+    {
+        if (global_removed[gid]) continue;
+        for (int node_idx : gid_to_nodes[gid])
+        {
+            if (node_idx < 0 || node_idx >= (int)PI.size()) continue;
+            int cid = PI[node_idx]->chain_id;
+            int pos = chain_pos[node_idx];
+            if (!(pos >= 0 && cid >= 0 && cid < (int)chains.size())) continue;
+            const auto &vec = chains[cid];
+            if (!(pos < (int)vec.size() && vec[pos] == node_idx)) continue; // removed occurrence
+            auto [nb1, nb2] = get_neighbours(node_idx);
+            if (nb1 != -1) gid_to_neighbors[gid].insert(node_to_gid[nb1]);
+            if (nb2 != -1) gid_to_neighbors[gid].insert(node_to_gid[nb2]);
+        }
+    }
+
+    // initialize candidate global vertices (not junctions or endpoints) using member gid_to_neighbors
     for (int gid = 0; gid < global_count; ++gid)
     {
         if (global_removed[gid]) continue; // already removed
-
-        bool candidate = false;
-        try
+        auto it = gid_to_neighbors.find(gid);
+        if (it == gid_to_neighbors.end() || it->second.size() != 2)
         {
-            candidate = is_node_candidate_removable(gid);
-        }
-        catch (const std::exception& e)
-        {
-            throw runtime_error(
-                std::string("simplify: is_node_candidate_removable threw for gid=") + std::to_string(gid) + "; what(): "
-                + e.what());
-        }
-
-        if (!candidate)
-        {
-            cout << "  global node " << gid << " not candidate" << endl;
             continue;
         }
 
@@ -580,9 +508,6 @@ void Slow_simplifier_PSLG::simplify(int remaining_vertices)
         handle_point(gid, ordered_triangles, mi);
         index_to_MI[gid] = mi;
     }
-
-
-    cout << "DEBUG: ordered_triangles size after init = " << ordered_triangles.size() << endl;
 
     int current_remaining = 0;
     for (const auto &ch : chains) current_remaining += static_cast<int>(ch.size());
@@ -610,29 +535,38 @@ void Slow_simplifier_PSLG::simplify(int remaining_vertices)
         // add global id of vertex to result
         result.push_back(gid);
 
-        // handle neighbor vertices: remove them from ordered set (they will be re-evaluated)
-        // note that this does not need to account for >2 neighbors since junctions are never candidates
-        auto it_neighbors = gid_to_original_neighbors.find(gid);
-        if (it_neighbors != gid_to_original_neighbors.end())
+        // snapshot the current neighbours (before we mutate data)
+        std::set<int> old_neighbours;
+        auto itg = gid_to_neighbors.find(gid);
+        if (itg != gid_to_neighbors.end())
+            old_neighbours = itg->second;
+
+        // remove the gid from ordered_triangles entries of its neighbours (they must be re-eval'ed)
+        for (int neigh_gid : old_neighbours)
         {
-            for (int neigh_gid : it_neighbors->second)
-            {
-                if (neigh_gid < 0 || neigh_gid >= (int)index_to_MI.size()) continue;
-                // use helper to remove neighbour entry from ordered_triangles and reset cursor
-                handle_neighbour_global(neigh_gid, ordered_triangles, index_to_MI);
-            }
+            if (neigh_gid < 0 || neigh_gid >= (int)index_to_MI.size()) continue;
+            handle_neighbour_global(neigh_gid, ordered_triangles, index_to_MI);
         }
 
         // remove all occurrences of this global vertex from chains and points list
-        for (int node_idx : gid_to_nodes[gid])
+        // TODO check if necessary
+        auto occurrences = gid_to_nodes[gid]; // copy
+        std::sort(occurrences.begin(), occurrences.end(), [&](int a, int b) {
+            int pa = (a >= 0 && a < (int)chain_pos.size()) ? chain_pos[a] : -1;
+            int pb = (b >= 0 && b < (int)chain_pos.size()) ? chain_pos[b] : -1;
+            if (pa != pb) return pa > pb;
+            return a > b;
+        });
+
+        for (int node_idx : occurrences)
         {
             if (node_idx < 0 || node_idx >= (int)PI.size()) continue;
-            // get chain id and pos
+            if (PI[node_idx] == points.end()) continue; // already erased
+
             int cid = PI[node_idx]->chain_id;
             int pos = chain_pos[node_idx];
             auto& vec = chains[cid];
 
-            // try-catch in case pos is stale, but normally pos should be valid
             if (pos >= 0 && pos < (int)vec.size() && vec[pos] == node_idx)
             {
                 vec.erase(vec.begin() + pos);
@@ -642,34 +576,73 @@ void Slow_simplifier_PSLG::simplify(int remaining_vertices)
                     chain_pos[vec[j]] = j;
                 }
             }
-            // erase from points list
+
+            // erase from points list and mark occurrence as erased
             points.erase(PI[node_idx]);
-            // leave PI[node_idx] dangling (we won't use it again)
+            PI[node_idx] = points.end();
+            chain_pos[node_idx] = -1;
         }
+
 
         // mark removed globally
         global_removed[gid] = 1;
-        // reset its iterator slot
+
+        // clear out the removed gid's neighbour set and occurrences (tidy)
+        gid_to_neighbors[gid].clear();
+        gid_to_nodes[gid].clear();
+
+        // Now recompute neighbour sets for the gids that might have changed (old_neighbours),
+        // because removing gid changes adjacency for those vertices.
+        for (int neigh_gid : old_neighbours)
+        {
+            if (neigh_gid < 0 || neigh_gid >= (int)gid_to_point.size()) continue;
+            if (global_removed[neigh_gid])
+            {
+                gid_to_neighbors[neigh_gid].clear();
+                continue;
+            }
+            std::set<int> recomputed;
+            for (int node_idx : gid_to_nodes[neigh_gid])
+            {
+                if (node_idx < 0 || node_idx >= (int)PI.size()) continue;
+                int cid = PI[node_idx]->chain_id;
+                int pos = chain_pos[node_idx];
+                if (!(pos >= 0 && cid >= 0 && cid < (int)chains.size() && chains[cid][pos] == node_idx))
+                    continue; // occurrence removed or stale
+                auto [nb1_node, nb2_node] = get_neighbours(node_idx);
+                if (nb1_node != -1) recomputed.insert(node_to_gid[nb1_node]);
+                if (nb2_node != -1) recomputed.insert(node_to_gid[nb2_node]);
+            }
+            gid_to_neighbors[neigh_gid] = std::move(recomputed);
+            // reset its block cursor so that future handle_point scanning restarts
+            if (neigh_gid < (int)global_block_cursor.size())
+                global_block_cursor[neigh_gid] = 0;
+        }
+
+        // reset its iterator slot for the removed gid
         if (gid >= 0 && gid < (int)index_to_MI.size())
             index_to_MI[gid] = ordered_triangles.end();
 
-        // unblock points: re-evaluate all global nodes that were candidates but currently not in ordered_triangles
-        for (int j = 0; j < global_count; j++)
+        // unblock points: re-evaluate affected neighbours (they were invalidated earlier)
+        for (int gid_check : old_neighbours)
         {
-            if (global_removed[j]) continue; // already removed
-            if (!is_node_candidate_removable(j)) continue; // not a candidate (endpoints / junctions)
-            if (index_to_MI[j] != ordered_triangles.end()) continue; // already in ordered_triangles
-
-            auto mi = index_to_MI[j];
-            handle_point(j, ordered_triangles, mi);
-            index_to_MI[j] = mi;
+            if (gid_check < 0 || gid_check >= (int)gid_to_point.size()) continue;
+            if (global_removed[gid_check]) continue; // already removed
+            auto itn = gid_to_neighbors.find(gid_check);
+            if (itn == gid_to_neighbors.end() || itn->second.size() != 2) continue; // not a candidate
+            if (index_to_MI[gid_check] != ordered_triangles.end()) continue; // already in ordered_triangles
+            auto mi = index_to_MI[gid_check];
+            handle_point(gid_check, ordered_triangles, mi);
+            index_to_MI[gid_check] = mi;
         }
     }
 }
 
 
+
 void Slow_simplifier_PSLG::generate_test_output()
 {
+    // TODO: might be bugged
     std::ofstream fout("../data/" + name + "/data.out");
     for (auto index : result)
         fout << index << std::endl;
@@ -730,5 +703,5 @@ void Slow_simplifier_PSLG::create_ipe_chains(std::vector<int> save_sizes)
 
 int Slow_simplifier_PSLG::get_initial_vertex_count() const
 {
-    return init_vertex_count; // TODO: note this likely can just go for the more global version of the code
+    return init_global_vertex_count;
 }

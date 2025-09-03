@@ -26,7 +26,29 @@ Fast_simplifier<T>::Fast_simplifier(std::string input_folder_name, bool auto_sim
 		VI.push_back(vi);
 	}
 
-	// init CT
+	// if the last and the first point are the same, drop it (we assume closed polygon already)
+	if (points.size() > 1 && points.front() == points.back()) {
+		// remove the duplicate point from the points vector
+		points.pop_back();
+
+		// remove the corresponding vertex from the triangulation and our containers.
+		// get the vertex handle for the last vertex we inserted
+		Vertex_handle vh = vertices.back().first;
+
+		// erase mapping from handle -> id
+		auto it_map = VH_to_id.find(vh);
+		if (it_map != VH_to_id.end())
+			VH_to_id.erase(it_map);
+
+		// remove the vertex from the constrained triangulation
+		ct.remove(vh);
+
+		// remove from our vertices list and VI (iterators are kept in parallel)
+		vertices.pop_back();
+		VI.pop_back();
+	}
+
+	// init CT constraints using the (possibly trimmed) points list
 	ct.insert_constraint(points.begin(), points.end(), true);
 	init_vertex_count = (int)vertices.size();
 

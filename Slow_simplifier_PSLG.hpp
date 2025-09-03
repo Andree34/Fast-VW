@@ -48,7 +48,7 @@ public:
 	template<typename Time_unit = std::chrono::milliseconds>
 	Metric get_metrics()
 	{
-		return Metric(init_vertex_count, name, get_runtime<Time_unit>(), get_PITC(), 0, 0);
+		return Metric(init_global_vertex_count, name, get_runtime<Time_unit>(), get_PITC(), 0, 0);
 	}
 
 	// prints all registered metrics
@@ -66,7 +66,7 @@ public:
 
 private:
 	long long point_in_triangle_checks = 0;
-	int init_vertex_count;
+	int init_global_vertex_count;
 
 	Timestamp start_time;
 	Timestamp end_time;
@@ -103,9 +103,9 @@ private:
 	// canonical point per global vid (coordinate)
 	std::vector<Point> gid_to_point;
 
-	// global neighbors of a vertex, mapped into using global vertex ids. These are not updated during simplification.
-	// used for junction detection
-	std::map<int, std::set<int>> gid_to_original_neighbors;
+	// global neighbors of a vertex, mapped using global vertex ids. This mapping is updated
+	// during simplification and always reflects the current immediate neighbours (for junction detection).
+	std::map<int, std::set<int>> gid_to_neighbors;
 
 	// Maps global vertex id -> whether it was removed
 	std::vector<char> global_removed;

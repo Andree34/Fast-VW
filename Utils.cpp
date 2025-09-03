@@ -161,7 +161,7 @@ void IPE::chains_to_IPE(std::string name, const std::vector<Chain>& chains_in, s
 	std::ofstream fout("../data/" + name + "/" + file_name + ".ipe");
 
 	fout << "<?xml version='1.0' encoding='utf-8'?>" << std::endl;
-	fout << "<ipe version=\"70212\" creator=\"miniipe\"><ipestyle name=\"miniipe\" /><page><layer name=\"my_layer\" />";
+	fout << "<ipe version=\"70212\" creator=\"miniipe\"><ipestyle name=\"miniipe\" /><page><layer name=\"chains\" />";
 	fout << std::setprecision(4) << std::fixed;
 
 	// emit each chain as its own path element; do not fill (polylines)
@@ -175,7 +175,7 @@ void IPE::chains_to_IPE(std::string name, const std::vector<Chain>& chains_in, s
 		{
 			fout << tc[i].first << " " << tc[i].second << " l ";
 		}
-		if (chain_closed[&tc - &chains[0]])
+		if (chain_closed[&tc - &chains[0]] && tc.size() > 1) // IPE does not like single points being closed shapes
 			fout << " h "; // close if requested
 		fout << "</path>";
 	}
