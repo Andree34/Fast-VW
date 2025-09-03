@@ -74,7 +74,6 @@ private:
 	// node list entry representing a single occurrence of a (possibly shared) vertex in a chain
 	struct NodeEntry {
 		Point p;                          // geometric point
-		std::pair<int, int> meta;         // meta.first = node index, meta.second = 'block' cursor used by handle_point
 		int chain_id = -1;                // which chain this node occurrence belongs to
 	};
 
@@ -94,13 +93,25 @@ private:
 	// chain closed flags
 	std::vector<char> chain_closed;
 
-	// occurrence bookkeeping for global vertex merging: maps global coordinate id -> list of node indices
-	std::vector<int> node_to_global_vid;
+	// occurrence bookkeeping for global vertex merging: maps node-index -> global coord id
+	std::vector<int> node_to_gid;
+	// reverse mapping: global vid -> occurrence node indices
+	std::vector<std::vector<int>> gid_to_nodes;
+
+	// location to the global id
 	std::map<std::pair<K::FT, K::FT>, int> global_coord_to_vid;
+	// canonical point per global vid (coordinate)
+	std::vector<Point> gid_to_point;
 
 	// global neighbors of a vertex, mapped into using global vertex ids. These are not updated during simplification.
 	// used for junction detection
-	std::map<int, std::set<int>> global_vid_to_original_neighbors;
+	std::map<int, std::set<int>> gid_to_original_neighbors;
+
+	// Maps global vertex id -> whether it was removed
+	std::vector<char> global_removed;
+
+	// block cursor per global vid (used when scanning other globals during blocking checks)
+	std::vector<int> global_block_cursor;
 
 	// get point iterator in the vertex list from a vertex id
 	[[nodiscard]] Point_iterator& get_pi(const int id) { return PI[id]; }
@@ -124,27 +135,22 @@ private:
 	[[nodiscard]] K::FT get_area(int ind);
 
 	/// <summary>
-	/// PRE: 'pi' points to a valid NodeEntry (not removed).
-	///      'removed' marks which node indices are already removed.
-	///      'ordered_triangles' may or may not contain an entry for 'pi'.
-	/// POST: If 'pi' corresponds to a removable vertex and is not blocked by another point,
-	///       then an entry (area, node_index) -> point is inserted into 'ordered_triangles'.
-	///       Otherwise, 'pi' is left untouched.
+	/// PRE: 'gid' is a valid global vertex id (exists in global_vid_to_point)
+	/// POST: If 'gid' corresponds to a removable global vertex and is not blocked by another point,
+	///       then an entry (area, global_vid) -> point is inserted into 'ordered_triangles'.
+	///       Otherwise, it is left untouched.
 	/// </summary>
-	void handle_point(Point_iterator pi,
+	void handle_point(int gid,
 	                  std::map<std::pair<K::FT, int>, Point>& ordered_triangles,
-	                  const std::vector<char>& removed,
 	                  std::map<std::pair<K::FT, int>, Point>::iterator& mi);
 
 	/// <summary>
-	/// PRE: 'pi' points to a valid NodeEntry (not removed).
-	///      'mi' is the iterator to the entry in 'ordered_triangles' corresponding to 'pi',
-	///      or 'ordered_triangles.end()' if not currently present.
-	/// POST: Removes 'pi' from 'ordered_triangles' if present.
-	///       Resets 'pi->meta.second' (block cursor) so the point will be re-evaluated later.
-	///       Sets 'mi = ordered_triangles.end()'.
+	/// Remove the global vertex 'gid' from ordered_triangles (if present) and reset its blocking cursor.
 	/// </summary>
-	void handle_neighbour(Point_iterator pi, std::map<std::pair<K::FT, int>, Point>& ordered_triangles, std::map<std::pair<K::FT, int>, Point>::iterator& mi);
+	void handle_neighbour_global(int gid,
+	                             std::map<std::pair<K::FT, int>, Point>& ordered_triangles,
+	                             std::vector<std::map<std::pair<K::FT, int>, Point>::iterator>& index_to_MI);
+
 	/// <summary>
 	/// PRE: "remaining_vertices" <= vertices.size()
 	///
@@ -163,9 +169,9 @@ private:
 	void build_internal_structures_from_chains(const std::vector<std::vector<Point>>& chains_points);
 
 	/// <summary>
-	/// PRE: node_index is a valid index into PI.
-	/// POST: Returns true if the node occurrence is a candidate for removal,
-	///       i.e. not a junction (appears in exactly one distinct chain) and has both neighbours.
+	/// PRE: gid is a valid global vertex id.
+	/// POST: Returns true if the global vertex is a candidate for removal,
+	///       i.e. not a junction (appears with exactly two distinct global neighbors) and none of its occurrences are endpoints.
 	/// </summary>
-	[[nodiscard]] bool is_node_candidate_removable(int node_index) const;
+	[[nodiscard]] bool is_node_candidate_removable(int gid) const;
 };

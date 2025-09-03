@@ -25,7 +25,9 @@ int main()
 	// vw.create_ipe_polygons({ 3, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000, 500000});
 	// vw.print_current_polygon();
 
-	Slow_simplifier_PSLG vw("IPE/gemeenten-2022_19282vtcs", false, false);
+	Slow_simplifier_PSLG vw("BoundaryBlock2", false, false);
+	// Slow_simplifier_PSLG vw("IPE/extracted-test", false, false);
+	// Slow_simplifier_PSLG vw("IPE/gemeenten-2022_19282vtcs", false, false);
 	auto init_vertex_count = vw.get_initial_vertex_count();
 	// do equispaced points of vertices for testing
 	std::vector<int> sizes = { init_vertex_count };
@@ -34,6 +36,9 @@ int main()
 		sizes.emplace_back( init_vertex_count - i * init_vertex_count / 10 );
 	}
 	vw.create_ipe_chains(sizes);
+
+
+
 	// vw.print_all_metrics();
 
 	//for (int i = STRESS_TESTS; i >=  500; i-= 100)
@@ -54,7 +59,7 @@ int main()
 	// Use exact constructions when testing
 	
 	// Test<Slow_simplifier>::run_tests();
-	// Test<Slow_simplifier_PSLG>::run_tests();
+	Test<Slow_simplifier_PSLG>::run_tests();
 	//std::cout << "Next batch:" << std::endl;
 	// Test<Fast_simplifier<CDT>>::run_tests();
 	// std::cout << "Next batch:" << std::endl;
