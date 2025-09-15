@@ -18,8 +18,7 @@ Slow_simplifier_PSLG::Slow_simplifier_PSLG(const std::string& input_folder_name,
     name(
         input_folder_name)
 {
-    start_time = std::chrono::high_resolution_clock::now();
-    end_time = start_time;
+    start_time = std::chrono::steady_clock::now();
 
     // parse input file into chains (flexible parsing; blank lines separate chains; 2 numbers per line are points)
     const auto chains_points = parse_input_file_as_chains("../data/" + input_folder_name + "/data.in");
@@ -31,7 +30,7 @@ Slow_simplifier_PSLG::Slow_simplifier_PSLG(const std::string& input_folder_name,
     if (auto_simplify)
     {
         simplify();
-        end_time = std::chrono::high_resolution_clock::now();
+        end_time = std::chrono::steady_clock::now();
     }
 
     if (gen_test)
@@ -309,14 +308,6 @@ bool Slow_simplifier_PSLG::is_in_triangle(Point p, Point tr1, Point tr2, Point t
 
 K::FT Slow_simplifier_PSLG::get_area(int ind)
 {
-    // TODO remove
-    {
-        if (ind < 0 || ind >= (int)PI.size())
-        {
-            throw runtime_error("Index for area invalid" + std::to_string(ind));
-        }
-    }
-
     auto [nb1, nb2] = get_neighbours(ind);
     if (nb1 == -1 || nb2 == -1)
         return K::FT(0); // endpoints / undefined triangle => area 0 (not removable)
@@ -377,7 +368,6 @@ void Slow_simplifier_PSLG::handle_point(
         if (is_in_triangle(oth, p, p1, p2))
         {
             blocked = true;
-            ++block;
             break;
         }
     }
@@ -427,15 +417,6 @@ bool Slow_simplifier_PSLG::is_node_candidate_removable(int gid) const
 
     }
 
-    // ensure none of its occurrences are endpoints (we require every occurrence has both neighbours)
-    // This is only necessary if we carea bout preserving original chain endpoints
-    // for (int node_index : gid_to_nodes[gid])
-    // {
-    //     if (node_index < 0 || node_index >= (int)PI.size()) return false; // removed/dangling treated as not removable
-    //     auto [nb1, nb2] = get_neighbours(node_index);
-    //     if (nb1 == -1 || nb2 == -1) return false; // endpoint occurrence -> not removable globally
-    // }
-
     // otherwise candidate
     return true;
 }
@@ -462,8 +443,6 @@ void Slow_simplifier_PSLG::simplify(const int remaining_vertices)
     // seed the removed mask from 'result' so repeated simplify() calls are safe
     if (!result.empty())
     {
-        // result historically *may* contain node-indices (legacy) or (now) global ids.
-        // Prefer interpreting entries as global ids if they fit in that range.
         for (int v : result)
         {
             if (v >= 0 && v < (int)global_removed.size())
