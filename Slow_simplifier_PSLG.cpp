@@ -217,6 +217,22 @@ void Slow_simplifier_PSLG::build_internal_structures_from_chains(const std::vect
                         a_start_idx = 1;
                 }
 
+                // if we're skipping the first element of a, we must remove that occurrence from points
+                // and mark its PI entry erased and chain_pos = -1 so no stale references remain.
+                if (a_start_idx == 1)
+                {
+                    int skipped_node = chains[a].front();
+                    if (skipped_node >= 0 && skipped_node < (int)PI.size())
+                    {
+                        if (PI[skipped_node] != points.end())
+                        {
+                            points.erase(PI[skipped_node]);
+                            PI[skipped_node] = points.end();
+                        }
+                    }
+                    chain_pos[skipped_node] = -1;
+                }
+
                 for (size_t k = a_start_idx; k < chains[a].size(); ++k)
                 {
                     new_chain.push_back(chains[a][k]);
@@ -237,7 +253,6 @@ void Slow_simplifier_PSLG::build_internal_structures_from_chains(const std::vect
 
                 // mark merged, and start over (so we don't attempt overlapping merges mid-iteration)
                 any_merged = true;
-                std::cout << "Merged chains " << a << " and " << b << " into chain " << b << std::endl;
 
                 // after merging, check if chain b became closed: start_gid == end_gid
                 if (chains[b].size() >= 1)
@@ -248,7 +263,6 @@ void Slow_simplifier_PSLG::build_internal_structures_from_chains(const std::vect
                     {
                         // mark closed
                         chain_closed[b] = 1;
-                        std::cout << "Chain " << b << " became closed by merging" << std::endl;
 
                         // remove the last occurrence (duplicate of first)
                         // erase NodeEntry from points list and mark PI[last_node] = points.end()
@@ -275,6 +289,18 @@ void Slow_simplifier_PSLG::build_internal_structures_from_chains(const std::vect
             }
 
             if (any_merged) break;
+        }
+    }
+
+    for (int n = 0; n < (int)PI.size(); ++n) {
+        if (PI[n] == points.end()) {
+            assert(chain_pos[n] == -1);
+        } else {
+            int cid = PI[n]->chain_id;
+            int pos = chain_pos[n];
+            assert(cid >= 0 && cid < (int)chains.size());
+            assert(pos >= 0 && pos < (int)chains[cid].size());
+            assert(chains[cid][pos] == n);
         }
     }
 
@@ -327,8 +353,17 @@ void Slow_simplifier_PSLG::build_internal_structures_from_chains(const std::vect
     for (int node = 0; node < (int)node_to_gid.size(); ++node)
     {
         int gid = node_to_gid[node];
+
+        // skip occurrences which were erased during merging (PI[node] will be points.end())
+        if (node < 0 || node >= (int)PI.size()) continue;
+        if (PI[node] == points.end())
+        {
+            // mark occurrence as erased in bookkeeping if not already
+            if (chain_pos[node] != -1) chain_pos[node] = -1;
+            continue;
+        }
+
         gid_to_nodes[gid].push_back(node);
-        // set canonical point if not yet set (we can overwrite repeatedly, it's the same coordinate)
         gid_to_point[gid] = PI[node]->p;
     }
 }
@@ -750,6 +785,10 @@ void Slow_simplifier_PSLG::chain_to_ipe(bool original)
     std::vector<IPE::Chain> out_chains;
     out_chains.reserve(chains.size());
 
+    // must be filtered to match out_chains one-to-one
+    std::vector<char> out_chain_closed;
+    out_chain_closed.reserve(chains.size());
+
     for (size_t cid = 0; cid < chains.size(); ++cid)
     {
         const auto& chain_nodes = chains[cid];
@@ -765,6 +804,7 @@ void Slow_simplifier_PSLG::chain_to_ipe(bool original)
         }
 
         out_chains.push_back(std::move(chain));
+        out_chain_closed.push_back(chain_closed[cid]);
     }
 
     if (out_chains.empty())
@@ -774,9 +814,8 @@ void Slow_simplifier_PSLG::chain_to_ipe(bool original)
     }
 
     // write all chains into one ipe file
-    IPE::chains_to_IPE(name, out_chains, chain_closed, get_vertices_left(), original);
+    IPE::chains_to_IPE(name, out_chains, out_chain_closed, get_vertices_left(), original);
 }
-
 
 // generate ipe output for multiple target sizes (descending), simplifying before each write
 void Slow_simplifier_PSLG::create_ipe_chains(std::vector<int> save_sizes)

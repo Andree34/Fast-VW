@@ -33,17 +33,23 @@ int main()
 
 	// Slow_simplifier_PSLG vw("BoundaryBlock", false, false);
 	// Slow_simplifier_PSLG vw("IPE/extracted-test", false, false);
-	Slow_simplifier_PSLG vw("IPE/gemeenten-2022_19282vtcs", false, false);
+	// Slow_simplifier_PSLG vw("IPE/gemeenten-2022_19282vtcs", false, false);
 	// Slow_simplifier_PSLG vw("IPE/gemeenten-2022_1929vtcs", false, false);
-	// Slow_simplifier_PSLG vw("IPE/testing3", false, false);
+	Slow_simplifier_PSLG vw("IPE/merge_test", false, false);
+	// Slow_simplifier_PSLG vw("IPE/testing4", false, false);
 	auto init_vertex_count = vw.get_initial_vertex_count();
 	// do equispaced points of vertices for testing
 	std::vector<int> sizes = { };
 	const int steps = 20;
 	for (int i = 1; i <= steps; ++i)
 	{
-		sizes.emplace_back( init_vertex_count - i * init_vertex_count / steps );
+		const int new_size = init_vertex_count - i * init_vertex_count / steps;
+		if (sizes.empty() || sizes.back() != new_size)
+			sizes.emplace_back( new_size );
 	}
+	// Filter out first size being same as input (can happen for small cases)
+	if (!sizes.empty() && sizes.front() == init_vertex_count)
+		sizes.erase(sizes.begin());
 	vw.create_ipe_chains(sizes);
 
 
