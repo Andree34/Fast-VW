@@ -175,6 +175,109 @@ void Slow_simplifier_PSLG::build_internal_structures_from_chains(const std::vect
         }
     }
 
+    // merge open chains that can be concatenated, if the result is a closed chain, mark it closed
+    bool any_merged = true;
+    while (any_merged)
+    {
+        any_merged = false;
+
+        for (size_t a = 0; a < chains.size(); ++a)
+        {
+            if (chain_closed[a]) continue;                // only open chains
+            if (chains[a].empty()) continue;
+
+            // start gid of chain a
+            int start_a_node = chains[a].front();
+            int start_a_gid = node_to_gid[start_a_node];
+
+            // try to find some chain b whose end matches start of a
+            for (size_t b = 0; b < chains.size(); ++b)
+            {
+                if (a == b) continue;
+                if (chain_closed[b]) continue;            // only open chains
+                if (chains[b].empty()) continue;
+
+                int end_b_node = chains[b].back();
+                int end_b_gid = node_to_gid[end_b_node];
+
+                if (start_a_gid != end_b_gid) continue;
+
+                // new_chain = chains[b] + chains[a], but drop duplicate occurrence at seam.
+                std::vector<int> new_chain;
+                new_chain.reserve(chains[b].size() + chains[a].size());
+
+                // copy chain b entirely
+                for (int n : chains[b]) new_chain.push_back(n);
+
+                // if seam duplicates, skip the first element of a
+                size_t a_start_idx = 0;
+                if (!new_chain.empty() && !chains[a].empty())
+                {
+                    if (node_to_gid[new_chain.back()] == node_to_gid[chains[a].front()])
+                        a_start_idx = 1;
+                }
+
+                for (size_t k = a_start_idx; k < chains[a].size(); ++k)
+                {
+                    new_chain.push_back(chains[a][k]);
+                }
+
+                // replace chain b with merged chain and clear chain a
+                chains[b].swap(new_chain);
+                chains[a].clear();
+
+                // update chain_id for node occurrences moved from a to b and refresh chain_pos for chain b
+                for (int pos = 0; pos < (int)chains[b].size(); ++pos)
+                {
+                    int node_idx = chains[b][pos];
+                    chain_pos[node_idx] = pos;
+                    if (PI[node_idx] != points.end())
+                        PI[node_idx]->chain_id = static_cast<int>(b);
+                }
+
+                // mark merged, and start over (so we don't attempt overlapping merges mid-iteration)
+                any_merged = true;
+                std::cout << "Merged chains " << a << " and " << b << " into chain " << b << std::endl;
+
+                // after merging, check if chain b became closed: start_gid == end_gid
+                if (chains[b].size() >= 1)
+                {
+                    int first_node = chains[b].front();
+                    int last_node = chains[b].back();
+                    if (node_to_gid[first_node] == node_to_gid[last_node])
+                    {
+                        // mark closed
+                        chain_closed[b] = 1;
+                        std::cout << "Chain " << b << " became closed by merging" << std::endl;
+
+                        // remove the last occurrence (duplicate of first)
+                        // erase NodeEntry from points list and mark PI[last_node] = points.end()
+                        if (last_node >= 0 && last_node < (int)PI.size() && PI[last_node] != points.end())
+                        {
+                            points.erase(PI[last_node]);
+                            PI[last_node] = points.end();
+                        }
+                        // mark chain_pos for removed occurrence
+                        chain_pos[last_node] = -1;
+                        // pop it from chain vector
+                        chains[b].pop_back();
+
+                        // recompute chain_pos for remaining nodes in chain b
+                        for (int pos = 0; pos < (int)chains[b].size(); ++pos)
+                        {
+                            chain_pos[chains[b][pos]] = pos;
+                        }
+                    }
+                }
+
+                // we mutated chains; break to outer while to restart merging scan
+                break;
+            }
+
+            if (any_merged) break;
+        }
+    }
+
     // build global neighbor sets for junction detection (initial state)
     for (size_t cid = 0; cid < chains.size(); ++cid)
     {
