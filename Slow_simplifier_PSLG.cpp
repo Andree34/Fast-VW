@@ -329,7 +329,7 @@ void Slow_simplifier_PSLG::handle_point(
     if (global_removed[gid])
         return;
 
-    // quick candidate check (uses current neighbours)
+    // quick candidate check
     if (!is_node_candidate_removable(gid))
         return;
 
@@ -406,14 +406,12 @@ void Slow_simplifier_PSLG::handle_neighbour_global(int gid, std::map<std::pair<K
     if (it == gid_to_neighbors.end() || it->second.size() != 2)
         return false;
 
-    // disallow removing third-last node from chain is closed
+    // disallow removing third-last node from chain when it is closed
     for (int node_index : gid_to_nodes[gid])
     {
         const int cid = PI[node_index]->chain_id;
         if (chain_closed[cid] && static_cast<int>(chains[cid].size()) <= 3)
-        {
             return false;
-        }
     }
 
     // otherwise candidate
@@ -509,6 +507,18 @@ void Slow_simplifier_PSLG::simplify(const int remaining_vertices)
 
         // get global vertex id of next vertex that is removed (smallest area non-blocked)
         auto best_it = ordered_triangles.begin();
+
+        // Check PSLG conditions
+        if (!is_node_candidate_removable(best_it->first.second))
+        {
+            // no longer a candidate remove from map and continue
+            int gid = best_it->first.second;
+            ordered_triangles.erase(best_it);
+            index_to_MI[gid] = ordered_triangles.end();
+            it_count--;
+            continue;
+        }
+
         Point best_point = best_it->second;
         int gid = best_it->first.second;
         ordered_triangles.erase(best_it);
@@ -527,7 +537,7 @@ void Slow_simplifier_PSLG::simplify(const int remaining_vertices)
         if (itg != gid_to_neighbors.end())
             old_neighbours = itg->second;
 
-        // remove the gid from ordered_triangles entries of its neighbours (they must be re-eval'ed)
+        // remove the gid from ordered_triangles entries of its neighbours (they must be re-evaluated)
         for (int neigh_gid : old_neighbours)
         {
             if (neigh_gid < 0 || neigh_gid >= (int)index_to_MI.size()) continue;
