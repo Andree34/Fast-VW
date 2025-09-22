@@ -141,7 +141,7 @@ void Slow_simplifier_PSLG::build_internal_structures_from_chains(const std::vect
 
         for (size_t pi_idx = 0; pi_idx < limit; ++pi_idx)
         {
-            auto p = chain_pts[pi_idx];
+            const auto& p = chain_pts[pi_idx];
 
             // merge duplicates by coordinate
             pair<K::FT, K::FT> coord = {p.x(), p.y()};
@@ -293,15 +293,15 @@ std::pair<int, int> Slow_simplifier_PSLG::get_neighbours(const int ind) const
     return {prev, next};
 }
 
-bool Slow_simplifier_PSLG::is_in_triangle(Point p, Point tr1, Point tr2, Point tr3) const
+bool Slow_simplifier_PSLG::is_in_triangle(const Point& p, const Point& tr1, const Point& tr2, const Point& tr3)
 {
     // handle degenerate case: collinear points (never blocked)
     if (CGAL::collinear(tr1, tr2, tr3))
         return false;
 
-    CGAL::Orientation ori1 = CGAL::orientation(tr1, tr2, p);
-    CGAL::Orientation ori2 = CGAL::orientation(tr2, tr3, p);
-    CGAL::Orientation ori3 = CGAL::orientation(tr3, tr1, p);
+    const CGAL::Orientation ori1 = CGAL::orientation(tr1, tr2, p);
+    const CGAL::Orientation ori2 = CGAL::orientation(tr2, tr3, p);
+    const CGAL::Orientation ori3 = CGAL::orientation(tr3, tr1, p);
 
     return !(ori1 == CGAL::RIGHT_TURN || ori2 == CGAL::RIGHT_TURN || ori3 == CGAL::RIGHT_TURN);
 }
@@ -396,7 +396,7 @@ void Slow_simplifier_PSLG::handle_neighbour_global(int gid, std::map<std::pair<K
 
 // helper to check whether a node occurrence is a candidate for removal:
 // must have exactly 1 distinct chain (i.e. not a junction)
-bool Slow_simplifier_PSLG::is_node_candidate_removable(int gid) const
+[[nodiscard]] bool Slow_simplifier_PSLG::is_node_candidate_removable(int gid) const
 {
     if (gid >= (int)gid_to_point.size())
         throw runtime_error("Invalid candidate gid");
@@ -414,7 +414,6 @@ bool Slow_simplifier_PSLG::is_node_candidate_removable(int gid) const
         {
             return false;
         }
-
     }
 
     // otherwise candidate
@@ -674,12 +673,15 @@ void Slow_simplifier_PSLG::create_ipe_chains(std::vector<int> save_sizes)
     chain_to_ipe(true);
     std::cout << "WROTE ORIGINAL" << std::endl;
 
-
+    auto last_save_size = -1;
     for (int vertex_count : save_sizes)
     {
         int current_remaining = get_vertices_left();
-
-        std ::cout << "[debug] SIMPLIFY TO " << vertex_count << " (currently " << current_remaining << " left)" << std::endl;
+        if (current_remaining == last_save_size)
+        {
+            std::cout << "Stopped simplifcation as no further simplification possible" << std::endl;
+            break; // stop if we cannot simplify further
+        }
 
         if (vertex_count > current_remaining)
             continue;
@@ -690,6 +692,8 @@ void Slow_simplifier_PSLG::create_ipe_chains(std::vector<int> save_sizes)
 
         // write all chains (in same file) to ipe
         chain_to_ipe();
+
+        last_save_size = current_remaining;
     }
 }
 

@@ -126,7 +126,7 @@ private:
 	/// <param name="tr2">second triangle point</param>
 	/// <param name="tr3">third triangle point</param>
 	/// <returns> true if p is in (tr1, tr2, tr3), or on the boundary, false otherwise</returns>
-	[[nodiscard]] bool is_in_triangle(Point p, Point tr1, Point tr2, Point tr3) const;
+	[[nodiscard]] static bool is_in_triangle(const Point& p, const Point& tr1, const Point& tr2, const Point& tr3);
 
 	// returns the area of the triangle corresponding to vh in the polygon/chain
 	[[nodiscard]] K::FT get_area(int ind);
