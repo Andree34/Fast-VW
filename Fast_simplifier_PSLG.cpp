@@ -296,24 +296,6 @@ void Fast_simplifier_PSLG::build_internal_structures_from_chains(const std::vect
         }
     }
 
-
-    // TODO: REMOVE LATER after checking validity with this
-    for (int n = 0; n < PI.size(); ++n)
-    {
-        if (PI[n] == points.end())
-        {
-            assert(chain_pos[n] == -1);
-        }
-        else
-        {
-            int cid = PI[n]->chain_id;
-            int pos = chain_pos[n];
-            assert(cid >= 0 && cid < (int)chains.size());
-            assert(pos >= 0 && pos < (int)chains[cid].size());
-            assert(chains[cid][pos] == n);
-        }
-    }
-
     // build global neighbor sets for junction detection (initial state)
     for (size_t cid = 0; cid < chains.size(); ++cid)
     {
