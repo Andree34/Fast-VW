@@ -24,6 +24,8 @@ set(SOURCE_FILES
     main.cpp
         Slow_simplifier.cpp
         Slow_simplifier.hpp
+        Fast_simplifier_PSLG.hpp
+        Fast_simplifier_PSLG.cpp
 )
 
 # Create executable target

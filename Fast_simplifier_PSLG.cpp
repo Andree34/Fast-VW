@@ -1,5 +1,9 @@
-#include "Slow_simplifier_PSLG.hpp"
-
+#include "Fast_simplifier_PSLG.hpp"
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <stdexcept>
+#include <CGAL/Constrained_triangulation_2.h>
 using std::string;
 using std::vector;
 using std::ifstream;
@@ -13,10 +17,10 @@ using std::to_string;
 using std::cout;
 using std::endl;
 using std::runtime_error;
+using Vertex_handle = CDT::Vertex_handle;
 
-Slow_simplifier_PSLG::Slow_simplifier_PSLG(const std::string& input_folder_name, bool gen_test, bool auto_simplify) :
-    name(
-        input_folder_name)
+Fast_simplifier_PSLG::Fast_simplifier_PSLG(const std::string& input_folder_name, bool gen_test, bool auto_simplify) :
+    name(input_folder_name)
 {
     start_time = std::chrono::steady_clock::now();
 
@@ -37,15 +41,15 @@ Slow_simplifier_PSLG::Slow_simplifier_PSLG(const std::string& input_folder_name,
         generate_test_output();
 }
 
-long long Slow_simplifier_PSLG::get_PITC() const
+long long Fast_simplifier_PSLG::get_PITC() const
 {
     return point_in_triangle_checks;
 }
 
 
 // .in file contains lines with 2 integers with an empty line between chains
-std::vector<std::vector<Slow_simplifier_PSLG::Point>>
-Slow_simplifier_PSLG::parse_input_file_as_chains(const std::string& path)
+std::vector<std::vector<Fast_simplifier_PSLG::Point>>
+Fast_simplifier_PSLG::parse_input_file_as_chains(const std::string& path)
 {
     std::ifstream in(path);
     if (!in)
@@ -106,7 +110,7 @@ Slow_simplifier_PSLG::parse_input_file_as_chains(const std::string& path)
 }
 
 // build internal structures (merge duplicates, create node occurrences)
-void Slow_simplifier_PSLG::build_internal_structures_from_chains(const std::vector<std::vector<Point>>& chains_points)
+void Fast_simplifier_PSLG::build_internal_structures_from_chains(const std::vector<std::vector<Point>>& chains_points)
 {
     // prepare member chains (chain sizes)
     chains.clear();
@@ -183,7 +187,7 @@ void Slow_simplifier_PSLG::build_internal_structures_from_chains(const std::vect
 
         for (size_t a = 0; a < chains.size(); ++a)
         {
-            if (chain_closed[a]) continue;                // only open chains
+            if (chain_closed[a]) continue; // only open chains
             if (chains[a].empty()) continue;
 
             // start gid of chain a
@@ -194,7 +198,7 @@ void Slow_simplifier_PSLG::build_internal_structures_from_chains(const std::vect
             for (size_t b = 0; b < chains.size(); ++b)
             {
                 if (a == b) continue;
-                if (chain_closed[b]) continue;            // only open chains
+                if (chain_closed[b]) continue; // only open chains
                 if (chains[b].empty()) continue;
 
                 int end_b_node = chains[b].back();
@@ -255,7 +259,7 @@ void Slow_simplifier_PSLG::build_internal_structures_from_chains(const std::vect
                 any_merged = true;
 
                 // after merging, check if chain b became closed: start_gid == end_gid
-                if (chains[b].size() >= 1)
+                if (!chains[b].empty())
                 {
                     int first_node = chains[b].front();
                     int last_node = chains[b].back();
@@ -292,10 +296,16 @@ void Slow_simplifier_PSLG::build_internal_structures_from_chains(const std::vect
         }
     }
 
-    for (int n = 0; n < (int)PI.size(); ++n) {
-        if (PI[n] == points.end()) {
+
+    // TODO: REMOVE LATER after checking validity with this
+    for (int n = 0; n < PI.size(); ++n)
+    {
+        if (PI[n] == points.end())
+        {
             assert(chain_pos[n] == -1);
-        } else {
+        }
+        else
+        {
             int cid = PI[n]->chain_id;
             int pos = chain_pos[n];
             assert(cid >= 0 && cid < (int)chains.size());
@@ -366,11 +376,107 @@ void Slow_simplifier_PSLG::build_internal_structures_from_chains(const std::vect
         gid_to_nodes[gid].push_back(node);
         gid_to_point[gid] = PI[node]->p;
     }
+
+    // insert canonical points and store vertex handles with gid in vertex info
+    ct.clear();
+    gid_to_vh.clear();
+    gid_to_vh.resize(init_global_vertex_count, CDT::Vertex_handle());
+
+    // insert all canonical points
+    for (int gid = 0; gid < init_global_vertex_count; ++gid)
+    {
+        auto vh = ct.insert(gid_to_point[gid]);
+        vh->info() = gid;
+        gid_to_vh[gid] = vh;
+    }
+
+    // add constraints from chains: consecutive canonical points (by gid)
+    for (size_t cid = 0; cid < chains.size(); ++cid)
+    {
+        const auto& chain_nodes = chains[cid];
+        if (chain_nodes.empty()) continue;
+        size_t len = chain_nodes.size();
+        for (size_t i = 0; i + 1 < len; ++i)
+        {
+            int a_node = chain_nodes[i];
+            int b_node = chain_nodes[i + 1];
+            if (a_node < 0 || b_node < 0) continue;
+            int ga = node_to_gid[a_node];
+            int gb = node_to_gid[b_node];
+            if (ga == gb) continue;
+            // insert constraint between canonical points (ct will find existing vertices)
+            auto vga = gid_to_vh[ga];
+            auto vgb = gid_to_vh[gb];
+
+            try
+            {
+                ct.insert_constraint(vga, vgb);
+            }
+            catch (...)
+            {
+                // If constraints intersection or other problem occurs here, we ignore and allow later rebuild if needed.
+                std::cerr << "Warning: constraint insertion failed between gid " << ga << " and gid " << gb <<
+                    std::endl;
+            }
+        }
+        // if closed chain, also add last->first constraint
+        if (chain_closed[cid] && !chain_nodes.empty())
+        {
+            int first_node = chain_nodes.front();
+            int last_node = chain_nodes.back();
+            if (first_node >= 0 && last_node >= 0)
+            {
+                int gfirst = node_to_gid[first_node];
+                int glast = node_to_gid[last_node];
+                if (gfirst != glast)
+                {
+                    auto v1 = gid_to_vh[gfirst];
+                    auto v2 = gid_to_vh[glast];
+
+                    try { ct.insert_constraint(v1, v2); }
+                    catch (...)
+                    {
+                        std::cerr << "Warning: constraint insertion failed to close" << std::endl;
+                    }
+                }
+            }
+        }
+    }
+
+    // If the constraint insertion has caused some points to be created/split on segments,
+    // ensure every canonical gid maps to a vertex handle with equal point (fallback fix):
+    for (int gid = 0; gid < init_global_vertex_count; ++gid)
+    {
+        Point p = gid_to_point[gid];
+        auto vh = gid_to_vh[gid];
+        if (vh == CDT::Vertex_handle() || vh->point() != p)
+        {
+            // try to find a vertex with same point
+            bool found = false;
+            for (auto vit = ct.finite_vertices_begin(); vit != ct.finite_vertices_end(); ++vit)
+            {
+                if (vit->point() == p)
+                {
+                    vit->info() = gid;
+                    gid_to_vh[gid] = vit;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+            {
+                // insert it
+                auto newvh = ct.insert(p);
+                newvh->info() = gid;
+                gid_to_vh[gid] = newvh;
+                std::cerr << "Warning: inserted missing vertex for gid " << gid << std::endl;
+            }
+        }
+    }
 }
 
-
 // return (prev_node_index, next_node_index) in the same chain as node index
-std::pair<int, int> Slow_simplifier_PSLG::get_neighbours(const int ind) const
+std::pair<int, int> Fast_simplifier_PSLG::get_neighbours(const int ind) const
 {
     // defensive checks
     if (ind < 0 || ind >= (int)PI.size())
@@ -431,7 +537,7 @@ std::pair<int, int> Slow_simplifier_PSLG::get_neighbours(const int ind) const
     return {prev, next};
 }
 
-bool Slow_simplifier_PSLG::is_in_triangle(const Point& p, const Point& tr1, const Point& tr2, const Point& tr3)
+bool Fast_simplifier_PSLG::is_in_triangle(const Point& p, const Point& tr1, const Point& tr2, const Point& tr3)
 {
     // handle degenerate case: collinear points (never blocked)
     if (CGAL::collinear(tr1, tr2, tr3))
@@ -444,7 +550,7 @@ bool Slow_simplifier_PSLG::is_in_triangle(const Point& p, const Point& tr1, cons
     return !(ori1 == CGAL::RIGHT_TURN || ori2 == CGAL::RIGHT_TURN || ori3 == CGAL::RIGHT_TURN);
 }
 
-K::FT Slow_simplifier_PSLG::get_area(int ind)
+K::FT Fast_simplifier_PSLG::get_area(int ind)
 {
     auto [nb1, nb2] = get_neighbours(ind);
     if (nb1 == -1 || nb2 == -1)
@@ -456,7 +562,7 @@ K::FT Slow_simplifier_PSLG::get_area(int ind)
     return abs(K::Triangle_2(p1, p2, p3).area());
 }
 
-void Slow_simplifier_PSLG::handle_point(
+void Fast_simplifier_PSLG::handle_point(
     int gid,
     std::map<std::pair<K::FT, int>, Point>& ordered_triangles,
     std::map<std::pair<K::FT, int>, Point>::iterator& mi)
@@ -490,17 +596,41 @@ void Slow_simplifier_PSLG::handle_point(
         std::swap(gid_nb1, gid_nb2);
     }
 
-    // scan for blocking vertices
-    const int global_count = static_cast<int>(gid_to_point.size());
+    // Use CDT: only iterate vertices incident to the vertex itself
+    std::set<int> candidates;
+
+    auto vh = gid_to_vh[gid];
+
+    if (vh != CDT::Vertex_handle() && !ct.is_infinite(vh))
+    {
+        // iterate incident vertices (circulator)
+        CDT::Vertex_circulator vc_start = ct.incident_vertices(vh);
+        if (vc_start != CDT::Vertex_circulator())
+        {
+            CDT::Vertex_circulator vc = vc_start;
+            do
+            {
+                auto oth_vh = vc;
+                if (oth_vh != CDT::Vertex_handle() && !ct.is_infinite(oth_vh))
+                {
+                    int other_gid = oth_vh->info();
+                    candidates.insert(other_gid);
+                }
+                ++vc;
+            }
+            while (vc != vc_start);
+        }
+    }
+
     bool blocked = false;
 
-    for (auto block = 0; block < global_count; ++block)
+    for (int block_gid : candidates)
     {
-        if (block == gid) continue;
-        if (global_removed[block]) continue;
-        if (block == gid_nb1 || block == gid_nb2) continue;
+        if (block_gid == gid) continue;
+        if (global_removed[block_gid]) continue;
+        if (block_gid == gid_nb1 || block_gid == gid_nb2) continue;
 
-        Point oth = gid_to_point[block];
+        Point oth = gid_to_point[block_gid];
         ++point_in_triangle_checks;
 
         if (is_in_triangle(oth, p, p1, p2))
@@ -521,7 +651,7 @@ void Slow_simplifier_PSLG::handle_point(
 
 
 // remove global id from ordered_triangles
-void Slow_simplifier_PSLG::handle_neighbour_global(int gid, std::map<std::pair<K::FT, int>, Point>& ordered_triangles,
+void Fast_simplifier_PSLG::handle_neighbour_global(int gid, std::map<std::pair<K::FT, int>, Point>& ordered_triangles,
                                                    std::vector<std::map<std::pair<K::FT, int>, Point>::iterator>&
                                                    index_to_MI)
 {
@@ -534,7 +664,7 @@ void Slow_simplifier_PSLG::handle_neighbour_global(int gid, std::map<std::pair<K
 
 // helper to check whether a node occurrence is a candidate for removal:
 // must have exactly 1 distinct chain (i.e. not a junction)
-[[nodiscard]] bool Slow_simplifier_PSLG::is_node_candidate_removable(int gid) const
+[[nodiscard]] bool Fast_simplifier_PSLG::is_node_candidate_removable(int gid) const
 {
     if (gid >= (int)gid_to_point.size())
         throw runtime_error("Invalid candidate gid");
@@ -557,12 +687,12 @@ void Slow_simplifier_PSLG::handle_neighbour_global(int gid, std::map<std::pair<K
 }
 
 
-unsigned long long Slow_simplifier_PSLG::get_vertices_left() const
+unsigned long long Fast_simplifier_PSLG::get_vertices_left() const
 {
     return init_global_vertex_count - result.size();
 }
 
-void Slow_simplifier_PSLG::simplify(const int remaining_vertices)
+void Fast_simplifier_PSLG::simplify(const int remaining_vertices)
 {
     // compute how many vertices currently left as sum of chain sizes
     auto vertices_left = get_vertices_left();
@@ -682,13 +812,53 @@ void Slow_simplifier_PSLG::simplify(const int remaining_vertices)
             handle_neighbour_global(neigh_gid, ordered_triangles, index_to_MI);
         }
 
-        // remove all occurrences of this global vertex from chains and points list
-        // TODO check if necessary
-        auto occurrences = gid_to_nodes[gid]; // copy
-        std::sort(occurrences.begin(), occurrences.end(), [&](int a, int b)
+
+        // if gid has a valid vertex handle in the CDT, update CDT:
+        if (gid >= 0 && gid < (int)gid_to_vh.size())
         {
-            int pa = (a >= 0 && a < (int)chain_pos.size()) ? chain_pos[a] : -1;
-            int pb = (b >= 0 && b < (int)chain_pos.size()) ? chain_pos[b] : -1;
+            auto vh = gid_to_vh[gid];
+            if (vh != CDT::Vertex_handle() && !ct.is_infinite(vh))
+            {
+                // if we have exactly two old neighbours (candidate property ensures this)
+                if (old_neighbours.size() == 2)
+                {
+                    auto itn = old_neighbours.begin();
+                    int gn1 = *itn;
+                    ++itn;
+                    int gn2 = *itn;
+                    // only insert constraint if both exist and are distinct and not removed
+                    if (gn1 >= 0 && gn2 >= 0 && gn1 != gn2 && !global_removed[gn1] && !global_removed[gn2])
+                    {
+                        auto v1 = CDT::Vertex_handle();
+                        auto v2 = CDT::Vertex_handle();
+                        if (gn1 < (int)gid_to_vh.size()) v1 = gid_to_vh[gn1];
+                        if (gn2 < (int)gid_to_vh.size()) v2 = gid_to_vh[gn2];
+                        if (v1 != CDT::Vertex_handle() && v2 != CDT::Vertex_handle())
+                        {
+                            // try to insert constraint (may throw on intersecting constraints)
+                            ct.insert_constraint(v1, v2);
+                        }
+                    }
+                }
+                // remove incident constraints and remove the vertex handle
+                if (ct.are_there_incident_constraints(vh))
+                {
+                    ct.remove_incident_constraints(vh);
+                }
+                // Now remove the vertex
+                ct.remove(vh);
+                // clear our mapping
+                gid_to_vh[gid] = CDT::Vertex_handle();
+            }
+        }
+
+
+        // remove all occurrences of this global vertex from chains and points list
+        auto occurrences = gid_to_nodes[gid]; // copy
+        std::sort(occurrences.begin(), occurrences.end(), [&](const int a, const int b)
+        {
+            int pa = (a >= 0 && a < chain_pos.size()) ? chain_pos[a] : -1;
+            int pb = (b >= 0 && b < chain_pos.size()) ? chain_pos[b] : -1;
             if (pa != pb) return pa > pb;
             return a > b;
         });
@@ -771,7 +941,7 @@ void Slow_simplifier_PSLG::simplify(const int remaining_vertices)
 }
 
 
-void Slow_simplifier_PSLG::generate_test_output()
+void Fast_simplifier_PSLG::generate_test_output()
 {
     // TODO: might be bugged
     std::ofstream fout("../data/" + name + "/data.out");
@@ -779,7 +949,7 @@ void Slow_simplifier_PSLG::generate_test_output()
         fout << index << std::endl;
 }
 
-void Slow_simplifier_PSLG::chain_to_ipe(bool original)
+void Fast_simplifier_PSLG::chain_to_ipe(bool original)
 {
     // build ipe chains from current chains (skip empty chains)
     std::vector<IPE::Chain> out_chains;
@@ -818,7 +988,7 @@ void Slow_simplifier_PSLG::chain_to_ipe(bool original)
 }
 
 // generate ipe output for multiple target sizes (descending), simplifying before each write
-void Slow_simplifier_PSLG::create_ipe_chains(std::vector<int> save_sizes)
+void Fast_simplifier_PSLG::create_ipe_chains(std::vector<int> save_sizes)
 {
     std::sort(save_sizes.begin(), save_sizes.end(), std::greater<int>());
 
@@ -849,7 +1019,7 @@ void Slow_simplifier_PSLG::create_ipe_chains(std::vector<int> save_sizes)
     }
 }
 
-int Slow_simplifier_PSLG::get_initial_vertex_count() const
+int Fast_simplifier_PSLG::get_initial_vertex_count() const
 {
     return init_global_vertex_count;
 }

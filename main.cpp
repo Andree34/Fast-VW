@@ -1,5 +1,6 @@
 #include "Core.hpp"
 #include "Fast_simplifier.hpp"
+#include "Fast_simplifier_PSLG.hpp"
 #include "Slow_simplifier_PSLG.hpp"
 #include "Test.hpp"
 #include "Utils.hpp"
@@ -33,9 +34,10 @@ int main()
 
 	// Slow_simplifier_PSLG vw("BoundaryBlock", false, false);
 	// Slow_simplifier_PSLG vw("IPE/extracted-test", false, false);
+	Fast_simplifier_PSLG vw("IPE/gemeenten-2022_92952vtcs", false, false);
 	// Slow_simplifier_PSLG vw("IPE/gemeenten-2022_19282vtcs", false, false);
 	// Slow_simplifier_PSLG vw("IPE/gemeenten-2022_1929vtcs", false, false);
-	Slow_simplifier_PSLG vw("IPE/merge_test", false, false);
+	// Slow_simplifier_PSLG vw("IPE/merge_test", false, false);
 	// Slow_simplifier_PSLG vw("IPE/testing4", false, false);
 	auto init_vertex_count = vw.get_initial_vertex_count();
 	// do equispaced points of vertices for testing
